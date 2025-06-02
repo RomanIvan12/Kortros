@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Name>Kortros</Name>
+		<Assembly>Kortros.dll</Assembly>
+		<FullClassName>Kortros.MainWindow</FullClassName>
+		<AddInId>0BC6A3FA-A008-45DC-A3E7-8D38ACCF393C</AddInId>
+		<VendorId>Roman_ivannikov</VendorId>
+		<VendorDescription>R.Ivannikov@kortros.ru</VendorDescription>
+	</AddIn>
+</RevitAddIns>

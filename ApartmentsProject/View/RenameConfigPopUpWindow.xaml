@@ -1,0 +1,23 @@
+﻿<Window x:Class="ApartmentsProject.View.RenameConfigPopUpWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ApartmentsProject.View"
+             mc:Ignorable="d" 
+         Title="Переименование конфигурации" Height="150" Width="300">
+    <Grid Margin="10">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="25" />
+            <RowDefinition Height="35" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <TextBlock Text="Введите новое название конфигурации:" Margin="5" />
+        <TextBox Name="NameTextBox" Margin="5" Grid.Row="1" />
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Grid.Row="2">
+            <Button Content="ОК" Width="75" Margin="5" IsDefault="True" Click="OkButton_Click" />
+            <Button Content="Отмена" Width="75" Margin="5" IsCancel="True" Click="CloseButton_Click" />
+        </StackPanel>
+
+    </Grid>
+</Window>

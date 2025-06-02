@@ -1,0 +1,36 @@
+﻿<?xml version='1.0' encoding='utf-8'?>
+<SettingsFile xmlns="http://schemas.microsoft.com/VisualStudio/2004/01/settings" CurrentProfile="(Default)" GeneratedClassNamespace="Kortros.General.UpdateParameters.Properties" GeneratedClassName="UpdateParameter">
+  <Profiles />
+  <Settings>
+    <Setting Name="ParameterKolichestvo" Type="System.Guid" Scope="User">
+      <Value Profile="(Default)">495d66c9-c5b5-493e-9b0f-73afc67e4216</Value>
+    </Setting>
+    <Setting Name="ParameterIzmer" Type="System.Guid" Scope="User">
+      <Value Profile="(Default)">7621a737-0095-43fe-93fd-ee4a267a6cab</Value>
+    </Setting>
+    <Setting Name="ParameterGroup" Type="System.Guid" Scope="User">
+      <Value Profile="(Default)">663814f3-e83a-447f-a1d5-866c8c082409</Value>
+    </Setting>
+    <Setting Name="UpdateParameterSelectedKolichestvo" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UpdateParameterSelectedIzmer" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UpdateParameterSelectedGroup" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UpdateParameterSelectedWorkset" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UpdateParameterSelectedElementId" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">True</Value>
+    </Setting>
+    <Setting Name="UpdateParameterUpdateOnlySelected" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="ParameterElementId" Type="System.Guid" Scope="User">
+      <Value Profile="(Default)">495ac66d-09f7-466e-b85a-59f70db13553</Value>
+    </Setting>
+  </Settings>
+</SettingsFile>

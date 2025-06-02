@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Name>Export PostgreSql</Name>
+		<Assembly>DataExporter\DataFromNavisView.dll</Assembly>
+		<FullClassName>DataFromNavisView.MainApplication</FullClassName>
+		<AddInId>229BA5C1-EF45-44E5-B82C-A53ED304D70A</AddInId>
+		<VendorId>Roman_ivannikov</VendorId>
+		<VendorDescription>R.Ivannikov@kortros.ru</VendorDescription>
+	</AddIn>
+</RevitAddIns>

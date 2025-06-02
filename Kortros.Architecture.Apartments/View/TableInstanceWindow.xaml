@@ -1,0 +1,154 @@
+﻿<Window x:Class="Kortros.Architecture.Apartments.View.TableInstanceWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:local="clr-namespace:Kortros.Architecture.Apartments.View"
+        xmlns:vm="clr-namespace:Kortros.Architecture.Apartments.ViewModel"
+        xmlns:img="clr-namespace:Kortros.Architecture.Apartments.ViewModel.Converter"
+        mc:Ignorable="d" 
+        Height="555" Width="1000"
+        Title="Настройка вставки семейства таблицы на этаж"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <img:ImageSourceConverter x:Key="ImageSourceConverter1"/>
+        <vm:TableInstanceVM x:Key="vm_instance"/>
+        <img:ImageSourceConverter x:Key="ImageSourceConverter"/>
+    </Window.Resources>
+    <Grid DataContext="{StaticResource vm_instance}" >
+        <Grid.RowDefinitions>
+            <RowDefinition Height="10"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="10"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="3*"/>
+                <ColumnDefinition Width="4*"/>
+            </Grid.ColumnDefinitions>
+
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+                <Label Grid.Row="0"
+                       Content="Предварительный просмотр"
+                       HorizontalAlignment="Center"/>
+                <Image Grid.Row="1" 
+                       Stretch="Uniform" 
+                       Source="..\Resources\Images\TableFull.png">
+                </Image>
+                <CheckBox Grid.Row="2"
+                          Content="Скрыть ГНС корпуса"
+                          Margin="20,10,10,10"
+                          VerticalAlignment="Center"
+                          IsChecked="{Binding HideGNS, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <CheckBox Grid.Row="3"
+                          Content="Скрыть коэффициенты"
+                          Margin="20,10,10,10"
+                          VerticalAlignment="Center"
+                          IsChecked="{Binding HideKoff, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <CheckBox Grid.Row="4"
+                          Content="Создать вспомогательные спецификации"
+                          Margin="20,10,10,10"
+                          VerticalAlignment="Center"
+                          IsChecked="{Binding AddTableView, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </Grid>
+
+            <Grid Grid.Column="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="150"/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="2*"/>
+                    <RowDefinition Height="40"/>
+                </Grid.RowDefinitions>
+                
+                <GroupBox Grid.Row="0"
+                          Header="Выберите вариант"
+                          Margin="5">
+                    <StackPanel>
+                        <TextBlock Text="{Binding Label1Text, Mode=TwoWay}" TextWrapping="Wrap"
+                                   Height="75"/>
+                        <ComboBox Height="20"
+                                  Width="100"
+                                  Margin="10,5,10,5"
+                                  HorizontalAlignment="Left"
+                                  VerticalAlignment="Bottom"
+                                  VerticalContentAlignment="Center"
+                                  ItemsSource="{Binding Variants}"
+                                  SelectedItem="{Binding SelectedVar, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  IsEnabled="{Binding IsComboBoxEnabled, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                  />
+                    </StackPanel>
+                </GroupBox>
+                <GroupBox Grid.Row="1"
+                          Header="Отображение состояния построенных зон"
+                          Margin="5">
+
+                    <StackPanel Margin="5"
+                                VerticalAlignment="Bottom">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="ВНС" Width="60"/>
+                            <TextBlock Text="{Binding ZoneVNS.Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="230" TextWrapping="Wrap"/>
+                            <Image/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="ГНС_250" Width="60"/>
+                            <TextBlock Text="{Binding ZoneGNS1.Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="230" TextWrapping="Wrap"/>
+                            <Image/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="ГНС_370" Width="60"/>
+                            <TextBlock Text="{Binding ZoneGNS2.Status, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Width="230" TextWrapping="Wrap"/>
+                            <Image/>
+                        </StackPanel>
+                    </StackPanel>
+                </GroupBox>
+
+                <Grid Grid.Row="3">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="2"
+                            Margin="5,5,10,5"
+                            Content="Отмена"
+                            Command="{Binding CancelCommand}"/>
+                    <Button Grid.Column="1"
+                            Margin="5,5,10,5"
+                            Content="ОК"
+                            FontSize="16"
+                            Command="{Binding OKButtonCommand}"
+                            CommandParameter="{Binding SelectedVar}"/>
+                </Grid>
+            </Grid>
+
+            <Grid Grid.Column="2">
+                <GroupBox Header="ИНСТРУКЦИЯ">
+                    <TextBlock TextWrapping="Wrap" FontSize="11" FontFamily="Monotxt">
+                        Плагин вставляет табличку. Необходимо выполнение следующих условий: <LineBreak/>
+                        1) Открыт ПЛАН ЭТАЖА, в проект загружено семейсво "KRTRS_Таблица расчета коэффициентов.rfa"<LineBreak/>
+                        2) Наличие помещений на виде. Если на планерасположено несколько "типов" секций, они сортируются по параметру "Комментарий". <LineBreak/>
+                        3) В проекте для помещений должен присутствовать параметр "ADSK_Номер квартиры", для жилых помещений он должен быть заполнен <LineBreak/>
+                        Шаблон заполнения варианта секции (параметр "Комментарий" для помещений) - "Вар NN" ИЛИ "Вариант NN", где NN - номер варианта (только цифры).<LineBreak/>
+                        К помещениям должны быть созданы зоны для ВНС, ГНС 250 и ГНС 370. Зоны сортируются по следующим критериям:<LineBreak/>
+                        * Параметр Имя у зоны должен подходить под шаблон "Вариант NN" или "Вар NN" , чтобы он учитывался (если присутствуют деление на типы секций. Если 
+                        вариант только один - параметр остаётся пустой)<LineBreak/>
+                        * Имя типоразмера зоны ВНС - "ВНС", зоны ГНС1 - "Всего по зданию", зоны ГНС2 - "ГНС_370"<LineBreak/>
+                        Строка состояния сигнализирует о наличии/отсутствии зоны для данного этажа данного варианта<LineBreak/>
+                        Какое либо значение не отработало, его значение по умолчанию - 11<LineBreak/>
+                        Флажки "Скрыть ГНС корпуса" и "Скрыть коэффициенты" управляют видимостью соответствующих сток в табличке<LineBreak/>
+                        Флажок  "Создать вспомогательные спецификации" создает спецификации (если их не было в проекте) для удобного контроля значение<LineBreak/>
+                    </TextBlock>
+                </GroupBox>
+            </Grid>
+            
+        </Grid>
+    </Grid>
+</Window>

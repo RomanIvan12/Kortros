@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Name>Parser</Name>
+		<Assembly>ParamParser\Kortros.ParamParser.dll</Assembly>
+		<FullClassName>Kortros.ParamParser.ParamParserApp</FullClassName>
+		<AddInId>613870FC-F058-4293-8391-3982FCD6ACF1</AddInId>
+		<VendorId>Roman_ivannikov</VendorId>
+		<VendorDescription>R.Ivannikov@kortros.ru</VendorDescription>
+	</AddIn>
+</RevitAddIns>

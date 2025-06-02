@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Name>TechnoPark</Name>
+		<Assembly>TechnoPark.dll</Assembly>
+		<FullClassName>TechnoPark.MainApplication</FullClassName>
+		<AddInId>97D4AFB5-A368-42A1-971F-02C72D115CB2</AddInId>
+		<VendorId>Roman_ivannikov</VendorId>
+		<VendorDescription>R.Ivannikov@kortros.ru</VendorDescription>
+	</AddIn>
+</RevitAddIns>

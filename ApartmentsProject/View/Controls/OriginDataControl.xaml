@@ -1,0 +1,28 @@
+﻿<UserControl x:Class="ApartmentsProject.View.Controls.OriginDataControl"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:ApartmentsProject.View.Controls"
+             mc:Ignorable="d"
+             Height="Auto" Width="Auto">
+    <Grid Background="Azure">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Grid.Row="0" Orientation="Horizontal"
+                    HorizontalAlignment="Left" Height="15"
+                    VerticalAlignment="Center">
+            <TextBlock x:Name="DataName" Text="КРТРС_Имя параметра"
+                       FontSize="12" FontWeight="Bold" VerticalAlignment="Center"
+                       Margin="0,0,9,0"/>
+            <TextBlock x:Name="DataType" Text="[Денежная единица]"
+                       VerticalAlignment="Center" FontSize="12"/>
+        </StackPanel>
+        <TextBlock Grid.Row="1"  x:Name="DataDescription" Text="Тип помещения. Назначается по матрице помещений"
+                   VerticalAlignment="Center" FontSize="10"
+                   TextWrapping="Wrap"/>
+
+    </Grid>
+</UserControl>

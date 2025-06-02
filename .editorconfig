@@ -1,0 +1,11 @@
+﻿[*.cs]
+
+# SYSLIB0011: Тип или член устарел
+dotnet_diagnostic.SYSLIB0011.severity = warning
+
+[*.xaml]
+
+# Подавляем предупреждения XDG0006 в XAML
+dotnet_diagnostic.XDG0003.severity = none
+dotnet_diagnostic.XDG0006.severity = none
+dotnet_diagnostic.XDG0010.severity = none

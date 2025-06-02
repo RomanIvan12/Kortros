@@ -1,0 +1,34 @@
+﻿<Window x:Class="Kortros.General.UpdateParameters.UpdateParametersWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Kortros.General.UpdateParameters"
+             mc:Ignorable="d" 
+             Height="450" Width="500">
+    <Grid Margin="20">
+        <DockPanel LastChildFill="False">
+            <Label DockPanel.Dock="Top" HorizontalAlignment="Center">
+                <TextBlock Text="Обновить параметры"/>
+            </Label>
+            <StackPanel DockPanel.Dock="Top" Orientation="Vertical" VerticalAlignment="Stretch">
+                <CheckBox Content="KRTRS_Количество" Margin="0,0,0,5" IsChecked="{Binding SelectedKolichestvo}"/>
+                <CheckBox Content="KRTRS_Единица измерения" Margin="0,0,0,5" IsChecked="{Binding SelectedIzmer}"/>
+                <CheckBox Content="KRTRS_Группирование" Margin="0,0,0,5" IsChecked="{Binding SelectedGroup}"/>
+                <CheckBox Content="ElementId" IsChecked="{Binding SelectedElementId}"/>
+
+                <CheckBox Content="Только выбранные / на виде" Margin="0,40,0,5" IsChecked="{Binding UpdateOnlySelected}"/>
+                <CheckBox Content="Выбранной категории" Margin="0,0,0,10"/>
+                <Label Content="Выберите категорию" Foreground="Gray"/>
+                <ComboBox Margin="20">
+
+                </ComboBox>
+            </StackPanel>
+            <DockPanel DockPanel.Dock="Bottom" HorizontalAlignment="Right">
+                <Button x:Name="CloseButton" Click="CloseButton_Click" Content="Cancel" HorizontalAlignment="Right" Padding="5" Margin="0,0,10,0" Width="70"/>
+                <Button x:Name="RunButton" Click="RunButton_Click" Content="RUN" Padding="5" Width="70"/>
+
+            </DockPanel>
+        </DockPanel>
+    </Grid>
+</Window>

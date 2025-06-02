@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Name>Kortros_NavisExporter</Name>
+		<Assembly>NavisExport.dll</Assembly>
+		<FullClassName>NavisExport.ExportStartUp</FullClassName>
+		<AddInId>777D9E2C-F3F6-4DA4-BCBC-8D8D4C47645D</AddInId>
+		<VendorId>Kortros_Roman_ivannikov</VendorId>
+		<VendorDescription>Roman Ivannikov</VendorDescription>
+	</AddIn>
+</RevitAddIns>

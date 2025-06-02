@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Name>RsnReloadApp</Name>
+		<Assembly>ReloaderApp\RsnModelReloader.dll</Assembly>
+		<FullClassName>RsnModelReloader.ReloaderApplication</FullClassName>
+		<AddInId>25480E5B-0B65-4267-B304-DF848E448C2C</AddInId>
+		<VendorId>Roman_ivannikov</VendorId>
+		<VendorDescription>R.Ivannikov@kortros.ru</VendorDescription>
+	</AddIn>
+</RevitAddIns>

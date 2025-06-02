@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Name>Apartments</Name>
+		<Assembly>ZoneCalculation\Kortros.Architecture.Apartments.dll</Assembly>
+		<FullClassName>Kortros.Architecture.Apartments.MainWindow</FullClassName>
+		<AddInId>7D103C7C-2EEF-4864-95DB-9AF29E1DA447</AddInId>
+		<VendorId>Roman_ivannikov</VendorId>
+		<VendorDescription>R.Ivannikov@kortros.ru</VendorDescription>
+	</AddIn>
+</RevitAddIns>

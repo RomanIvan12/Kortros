@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Name>CreateLinksApp</Name>
+		<Assembly>CreateLinks\CreateLinks.dll</Assembly>
+		<FullClassName>CreateLinks.MainApplication</FullClassName>
+		<AddInId>D72DDCED-B405-49C8-8FFC-4BB279514CA8</AddInId>
+		<VendorId>Roman_ivannikov</VendorId>
+		<VendorDescription>R.Ivannikov@kortros.ru</VendorDescription>
+	</AddIn>
+</RevitAddIns>

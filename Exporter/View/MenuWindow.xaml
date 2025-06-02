@@ -1,0 +1,135 @@
+﻿<Window x:Class="ExporterFromRs.View.MenuWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:ExporterFromRs"
+             mc:Ignorable="d" 
+             Height="500"
+             Width="650"
+             Title="Окно выбора файлов с Revit Server"
+        WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="70"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="40"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <GroupBox Header="Server name or IP"
+                  Grid.Row="0"
+                  Margin="5">
+            <Grid >
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="100"/>
+                </Grid.ColumnDefinitions>
+                <ComboBox x:Name="ServerIPs"
+                          Grid.Column="0"
+                          Margin="5,5,5,5"
+                          IsEditable="False"
+                          SelectedValue="Выберите IP сервера"
+                          SelectionChanged="ServerIPs_SelectionChanged"
+                          />
+                <ComboBox x:Name="ProjectName"
+                          Grid.Column="1"
+                          Margin="5,5,5,5"
+                          DisplayMemberPath="Name"
+                          IsEditable="True"/>
+                <Button x:Name="PickProject"
+                        Margin="5"
+                        Content="Выбрать"
+                        Grid.Column="2" 
+                        Click="PickProject_Click"/>
+            </Grid>
+        </GroupBox>
+        <GroupBox Header="Отображаемые файлы" 
+                  Grid.Row="1"
+                  Margin="5">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.55*"/>
+                    <ColumnDefinition Width="*"/>
+                </Grid.ColumnDefinitions>
+                <TreeView x:Name="trvContent"                          
+                          Margin="5"
+                          Grid.Column="0"
+                          VerticalAlignment="Stretch"/>
+                <StackPanel x:Name="RevitFiles"
+                            VerticalAlignment="Bottom"
+                            Margin="5"
+                            Grid.Column="1">
+                    <CheckBox x:Name="PurgeElements"
+                              VerticalAlignment="Center"
+                              Height="30"
+                              Content="Удалить неиспользуемые элементы"
+                              IsChecked="True"/>
+                </StackPanel>
+                <CheckBox Grid.Column="1" Margin="5,5,5,50"
+                          x:Name="Convert"
+                          VerticalAlignment="Bottom"
+                          VerticalContentAlignment="Center"
+                          Height="30"
+                          IsChecked="False"
+                          IsEnabled="False"
+                          Click="checkBoxConvert_CheckedChanged">
+                    <CheckBox.Content>
+                        <TextBlock Text="Выгрузить файлы .nwc в выходную папку проекта. (Займёт доп. время)"
+                                   TextWrapping="Wrap" />
+                    </CheckBox.Content>
+                </CheckBox>
+                <CheckBox Grid.Column="1" Margin="5,5,5,85"
+                          x:Name="Rebar"
+                          VerticalAlignment="Bottom"
+                          VerticalContentAlignment="Center"
+                          Height="30"
+                          IsChecked="False"
+                          IsEnabled="False">
+                    <CheckBox.Content>
+                        <TextBlock Text="Скрыть элементы армирования на виде Navisworks"
+                                   TextWrapping="Wrap" />
+                    </CheckBox.Content>
+                </CheckBox>
+            </Grid>
+        </GroupBox>
+        <Grid 
+            Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Button x:Name="CheckAll"
+                    Grid.Column="0"
+                    Content="Check All"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Click="CheckAllChains"
+                    Margin="10, 5, 5, 5"/>
+            <Button x:Name="UnCheckAll"
+                    Grid.Column="1"
+                    Content="Uncheck All"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Margin="5, 5, 5, 5"
+                    Click="UnCheckAllChains"/>
+            <Button x:Name="ToggleAll"
+                    Grid.Column="2"
+                    Content="Toggle All"
+                    HorizontalAlignment="Stretch"
+                    VerticalAlignment="Stretch"
+                    Margin="5, 5, 10, 5"
+                    Click="ToggleAllChains"
+                    />
+        </Grid>
+        <Button x:Name="Select"
+                IsEnabled="False"
+                Grid.Row="3"
+                Content="Select"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Margin="10,5,10,10"
+                Click="Select_Click"/>
+    </Grid>
+</Window>

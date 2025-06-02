@@ -1,0 +1,42 @@
+﻿<Window x:Class="Kortros.General.ExcelSync.Common.ErrorWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Kortros.General.ExcelSync.Common"
+             mc:Ignorable="d" 
+             Title="Ошибка" Height="320" Width="500" MinHeight="320" MinWidth="500">
+    <Grid Margin="20">
+        <DockPanel LastChildFill="False">
+            <RichTextBox
+            Margin="0,5,0,5"
+            Name="richTB"
+            DockPanel.Dock="Top"
+            IsReadOnly="True"
+            MaxHeight="200"
+            ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+            ScrollViewer.VerticalScrollBarVisibility="Auto" BorderBrush="{x:Null}"
+            >
+                <RichTextBox.Resources>
+                    <Style TargetType="{x:Type Paragraph}">
+                        <Setter Property="Margin" Value="0"/>
+                    </Style>
+                </RichTextBox.Resources>
+                <FlowDocument>
+                    <Paragraph>
+                        <Run Text="{Binding DocName, Mode=OneWay}" FontWeight="Bold" />
+                    </Paragraph>
+                    <Paragraph>
+                        <Run Text="{Binding Exception.Message, Mode=OneWay}" Foreground="Red" />
+                    </Paragraph>
+                    <Paragraph>
+                        <Run Text="{Binding Exception.StackTrace, Mode=OneWay}" />
+                    </Paragraph>
+                </FlowDocument>
+            </RichTextBox>
+            <DockPanel DockPanel.Dock="Bottom" HorizontalAlignment="Left">
+                <Button x:Name="CloseButton" Click="CloseButton_Click" Padding="5"  Margin="0,0,5,0">Закрыть</Button>
+            </DockPanel>
+        </DockPanel>
+    </Grid>
+</Window>

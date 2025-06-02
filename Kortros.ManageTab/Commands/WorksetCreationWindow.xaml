@@ -1,0 +1,57 @@
+﻿<Window x:Class="Kortros.ManageTab.Commands.WorksetCreationWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Kortros.ManageTab.Commands"
+             mc:Ignorable="d" 
+             Height="450"
+             Width="500">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="50"/>
+        </Grid.RowDefinitions>
+        <Grid Grid.Row="0">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <GroupBox Header="Выберите рабочие наборы из списка"
+                      Grid.Column="0"
+                      Margin="10">
+                <StackPanel x:Name ="WorksetList" 
+                            Margin="10"
+                            Background="#19FF0000">
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Рабочие наборы проекта"
+                      Grid.Column="1"
+                      Margin="10">
+                <ListBox x:Name="CreatedWorksets"
+                    Margin="10"
+                         DisplayMemberPath="NameValue"/>
+
+            </GroupBox>
+        </Grid>
+        <Button x:Name="btn"
+                Grid.Row="1"
+                Margin="0,0,50,0"
+                Width="100"
+                Height="30"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Center"
+                Content="Создать РН"
+                Click="btn_CreateWorksets"/>
+        <CheckBox x:Name="CheckAll"
+                  Grid.Row="1"
+                  HorizontalAlignment="Left"
+                  VerticalAlignment="Center"
+                  Content="Выбрать всё"
+                  Margin="50,0"
+                  Checked="CheckAll_Checked"
+                  Unchecked="CheckAll_Unchecked"
+                  />
+
+    </Grid>
+</Window>

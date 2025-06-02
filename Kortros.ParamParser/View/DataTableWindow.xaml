@@ -1,0 +1,104 @@
+﻿<Window x:Class="Kortros.ParamParser.View.DataTableWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Kortros.ParamParser.View"
+             xmlns:vm="clr-namespace:Kortros.ParamParser.ViewModel"
+             mc:Ignorable="d" 
+             Height="450" Width="1200"
+             
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+
+             TextElement.Foreground="{DynamicResource MaterialDesign.Brush.Foreground}"
+             Background="{DynamicResource MaterialDesign.Brush.Background}"
+             TextElement.FontWeight="Light"
+             TextElement.FontSize="14"
+             FontFamily="{materialDesign:MaterialDesignFont}"
+             Style="{DynamicResource MaterialDesignWindow}"
+             WindowStyle="None">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <materialDesign:BundledTheme BaseTheme="Light"
+                                         ColorAdjustment="{materialDesign:ColorAdjustment}"
+                                         PrimaryColor ="Grey" 
+                                         SecondaryColor="Red"/>
+                <ResourceDictionary Source="pack://application:,,,/MaterialDesignThemes.Wpf;component/themes/MaterialDesign3.Defaults.xaml"/>
+                <ResourceDictionary>
+
+                    <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignFlatButton}">
+                        <Setter Property="Background" Value="White"/>
+                        <Setter Property="Padding" Value="4"/>
+                        <Setter Property="BorderBrush" Value="LightGray"/>
+                        <Setter Property="BorderThickness" Value="1"/>
+                        <Setter Property="materialDesign:RippleAssist.IsCentered" Value="True"/>
+                        <Setter Property="materialDesign:RippleAssist.ClipToBounds" Value="False"/>
+                    </Style>
+
+                    <Style TargetType="materialDesign:PackIcon">
+                        <Setter Property="Foreground" Value="#FF9A0F0F"/>
+                    </Style>
+
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Grid.LayoutTransform>
+            <ScaleTransform ScaleX="0.8" ScaleY="0.8"/>
+        </Grid.LayoutTransform>
+        <Border Background="{DynamicResource MaterialDesignPaper}">
+            <Grid>
+                <Grid VerticalAlignment="Top" 
+                      Background="{DynamicResource PrimaryHueMidBrush}" 
+                      Height="30">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <!-- Лого -->
+                    <Image Source="pack://application:,,,/Kortros.ParamParser;component/Icons/logo.png" Width="30" Height="30" Margin="0"
+                    />
+                    <!-- Название программы -->
+                    <TextBlock Text="Результат" VerticalAlignment="Center" FontSize="18" FontWeight="Medium" Grid.Column="1" Margin="10,0,0,0"/>
+                </Grid>
+
+                <Grid>
+                    <DockPanel LastChildFill="False" Margin="10,35,10,10">
+                        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Right">
+                            <Button Content="Export" Height="30"
+                                    Command="{Binding ExportDataCsvCommand}"
+                                    Width="100" Padding="5" HorizontalAlignment="Right" Margin="0,0,15,0"/>
+                            <Button x:Name="OkButton" Content="OK" Height="30"
+                                    Width="100" Padding="5" HorizontalAlignment="Right" Click="OkButton_Click"/>
+                        </StackPanel>
+                        <DataGrid DockPanel.Dock="Top" Width="Auto"
+                                  ItemsSource="{Binding DataItems}" AutoGenerateColumns="False" HorizontalAlignment="Stretch"
+                                  VerticalAlignment="Stretch" CanUserAddRows="False" CanUserDeleteRows="False"
+                                  GridLinesVisibility="All">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Binding="{Binding ElementId}" IsReadOnly="True"
+                                                    Header="ID" Width="100" CanUserResize="True"/>
+                                <DataGridTextColumn Binding="{Binding ElementName}" IsReadOnly="True"
+                                                    Header="Семейство и типоразмер" Width="250" CanUserResize="True"/>
+                                <DataGridTextColumn Binding="{Binding InitParameterName}" IsReadOnly="True"
+                                                    Header="Исходный параметр" Width="200" CanUserResize="True"/>
+                                <DataGridTextColumn Binding="{Binding InitValue}" IsReadOnly="True"
+                                                    Header="Значение" Width="150" CanUserResize="True"/>
+                                <DataGridTextColumn Binding="{Binding TargParameterName}" IsReadOnly="True"
+                                                    Header="Целевой параметр" Width="200" CanUserResize="True"/>
+                                <DataGridTextColumn Binding="{Binding TargValue}" IsReadOnly="True"
+                                                    Header="Значение" Width="150" CanUserResize="True"/>
+                                <DataGridTextColumn Binding="{Binding Status}" IsReadOnly="True"
+                                                    Header="Статус" Width="120" CanUserResize="True"/>
+                                <DataGridTextColumn Binding="{Binding Message}" IsReadOnly="True"
+                                                    Header="Сообщение" Width="*" CanUserResize="True"/>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </DockPanel>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

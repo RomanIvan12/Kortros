@@ -1,0 +1,41 @@
+﻿<Window x:Class="DataFromNavisView.PostgreSqlWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:DataFromNavisView"
+             mc:Ignorable="d" 
+             Height="240" Width="300"
+             WindowStartupLocation="CenterScreen">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <StackPanel Orientation="Horizontal" Grid.Row="0">
+            <TextBlock Text="Username:" Width="120" VerticalAlignment="Center" Margin="20,0,0,0"/>
+            <TextBox Text="bimuser" Margin="5" Width="120" IsEnabled="False" VerticalContentAlignment="Center"/>
+        </StackPanel>
+
+
+        <StackPanel Orientation="Horizontal" Grid.Row="3">
+            <TextBlock Text="Database name:" Width="120" VerticalAlignment="Center" Margin="20,0,0,0"/>
+            <TextBox x:Name="DatabaseName" Text="Projects_parameters" Margin="5" Width="120" IsEnabled="False"/>
+        </StackPanel>
+
+
+        <StackPanel Orientation="Horizontal" Grid.Row="4">
+            <TextBlock Text="Project name:" Width="120" VerticalAlignment="Center" Margin="20,0,0,0"/>
+            <ComboBox x:Name="ProjectsList" Margin="5" Width="120" IsEditable="True"/>
+        </StackPanel>
+        <!--<Button Grid.Row="2" Margin="10,5" Width="80" Content="ConnectDB" HorizontalAlignment="Center" Click="ConnectBtn_Click"/>-->
+
+        <Button Grid.Row="5" Margin="10,5" Width="80" Content="Элементы" HorizontalAlignment="Left" Click="OkButton_Click"/>
+        <Button Grid.Row="5" Margin="10,5" Width="80" Content="Материалы" HorizontalAlignment="Center" Click="OkMaterials_Click"/>
+        <Button Grid.Row="5" Margin="10,5" Width="80" Content="Всё вместе" HorizontalAlignment="Right" Click="Both_Click"/>
+    </Grid>
+</Window>

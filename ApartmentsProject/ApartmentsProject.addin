@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<RevitAddIns>
+	<AddIn Type="Application">
+		<Name>Kvartirografia</Name>
+		<Assembly>Kvartirografia\ApartmentsProject.dll</Assembly>
+		<FullClassName>ApartmentsProject.MainApplication</FullClassName>
+		<AddInId>A6DB0B37-372C-4103-9ACF-080036B8B502</AddInId>
+		<VendorId>Roman_ivannikov</VendorId>
+		<VendorDescription>R.Ivannikov@kortros.ru</VendorDescription>
+	</AddIn>
+</RevitAddIns>

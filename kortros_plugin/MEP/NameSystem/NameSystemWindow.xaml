@@ -1,0 +1,30 @@
+﻿<Window x:Class="Kortros.MEP.NameSystem.NameSystemWindow"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Kortros.MEP.NameSystem"
+             mc:Ignorable="d" 
+             Title="Выберите параметр для копирования в KRTRS_Имя Системы"
+             Height="150"
+             Width="450">
+    <Grid>
+        <RadioButton x:Name="SysName"
+                 Content="Имя системы"
+                 HorizontalAlignment="Left"
+                 VerticalAlignment="Top"
+                 Margin="10,20,0,0"/>
+        <RadioButton x:Name="SysShort"
+                 Content="Сокращение для системы"
+                 HorizontalAlignment="Left"
+                 VerticalAlignment="Top"
+                 Margin="10,50,0,0"/>
+        <Button Content="OK"
+            Click="OKButton"
+            Height="20"
+            Width="50"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Bottom"
+            Margin="0,0,20,10"/>
+    </Grid>
+</Window>
