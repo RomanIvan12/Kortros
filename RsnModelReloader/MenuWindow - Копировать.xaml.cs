@@ -15,7 +15,6 @@ using Application = Autodesk.Revit.ApplicationServices.Application;
 using RsnModelReloader.Helpers;
 using Autodesk.Revit.DB;
 using Newtonsoft.Json;
-using System.Runtime.Remoting.Messaging;
 
 namespace RsnModelReloader
 {
@@ -32,9 +31,11 @@ namespace RsnModelReloader
         private readonly BitmapImage _folderIcon;
         private readonly BitmapImage _fileIcon;
 
-        private List<Model> _modelList = new List<Model>();
 
-        private Dictionary<Model, string> _dictionary = new Dictionary<Model, string>();
+        private List<Model> _modelList;
+
+
+        private Dictionary<Model, string> _dictionary;
 
         public MenuWindow(Application app, string versionNumber)
         {
@@ -67,9 +68,10 @@ namespace RsnModelReloader
                     _folderIcon = icon;
                 }
             }
-            var listOfips = GetServerIps(versionNumber);
-            ServerIPs.ItemsSource = listOfips;
-            ServerIPs.SelectedItem = listOfips[0];
+
+
+            ServerIPs.ItemsSource = GetServerIps(versionNumber);
+            ProjectName.ItemsSource = "";
             Logger.Log.Info("Reloader Initialized");
         }
 
@@ -84,6 +86,20 @@ namespace RsnModelReloader
             string[] serverIps = System.IO.File.ReadAllLines(configFilePath);
 
             return serverIps;
+        }
+
+        //Событие нажатия кнопки. Получаем список папок проектов. Присваиваем значения IP & RevitVersion переменным для дальнейшего обращения к ним
+        // Активируем Комбобокс с списком папок
+        private void ServerIPs_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            string ip = ServerIPs.SelectedItem.ToString();
+            _serverIp = ip;
+            string url = "http://" + ip + "/RevitServerAdminRESTService" + _revitVersion + "/AdminRESTService.svc/";
+
+            Task.Run(() => RSFolderContent(url)).Wait();
+
+            ProjectName.IsEnabled = true;
+            ProjectName.ItemsSource = _folders;
         }
 
         //Функция получения списка корневых папок по гетзапросу (папки проектов)
@@ -105,7 +121,7 @@ namespace RsnModelReloader
                     {
                         string result = response.Content.ReadAsStringAsync().GetAwaiter().GetResult();
                         List<Folder> folders = JsonConvert.DeserializeObject<RootContent>(result).Folders;
-                        _folders = folders; // список всех папочек
+                        _folders = folders;
                     }
                 }
                 catch (Exception ex)
@@ -115,46 +131,38 @@ namespace RsnModelReloader
             }
         }
 
-        //Событие нажатия кнопки. Получаем список папок проектов. Присваиваем значения IP & RevitVersion переменным для дальнейшего обращения к ним
-        // Активируем Комбобокс с списком папок
+
         private void PickProject_Click(object sender, RoutedEventArgs e)
         {
-            string ip = ServerIPs.SelectedItem.ToString();
-            _serverIp = ip;
-            string url = "http://" + ip + "/RevitServerAdminRESTService" + _revitVersion + "/AdminRESTService.svc/";
-
-            Task.Run(() => RSFolderContent(url)).Wait();
-
             trvContent.Items.Clear();
 
-            foreach (var folder in _folders)
+            if (ProjectName.SelectedItem != null)
             {
+                Folder folder = ProjectName.SelectedItem as Folder;
                 string foldPathName = folder.Name;
                 _folderPathName = foldPathName;
+                Logger.Log.Info($"Выбран проект - {foldPathName}");
 
-                TreeViewItem root1 = new TreeViewItem
+                TreeViewItem root = new TreeViewItem
                 {
                     Header = _folderPathName
                 };
-                trvContent.Items.Add(root1);
+                trvContent.Items.Add(root);
 
                 List<Model> modelList = new List<Model>();
-                AddContent(root1, _folderPathName, _folderPathName, modelList);
-                foreach (var model in modelList)
-                {
-                    _modelList.Add(model); // Получаем список отмеченных моделей текущей папки
-                }
+                AddContent(root, _folderPathName, _folderPathName, modelList);
+                _modelList = modelList; // Получаем список отмеченных моделей
 
                 // Получил полный словарь Model: путь для послудующего сопоставления отмеченных Model с этим словарем
                 Dictionary<Model, string> dictionary = new Dictionary<Model, string>();
                 GetModelsDict(dictionary, _folderPathName);
-
-                foreach (var dict in dictionary)
-                {
-                    _dictionary[dict.Key] = dict.Value;
-                }
+                _dictionary = dictionary;
+                Select.IsEnabled = true;
             }
-            Select.IsEnabled = true;
+            else
+            {
+                Logger.Log.Error("Проект не выбран");
+            }
         }
 
         #region Создание и работа с TreeView
@@ -164,26 +172,27 @@ namespace RsnModelReloader
         private void AddContent(TreeViewItem header, string folderPath, string folderName, List<Model> modelList)
         {
             //Add Root Folders
-            header.Header = GetTreeView(folderName, _folderIcon);
-           
+            header.Header = folderName;
+
             var xxx = GetContent(folderPath);
+
             List<Folder> folders = JsonConvert.DeserializeObject<RootContent>(xxx).Folders;
             foreach (Folder folder in folders)
             {
-                TreeViewItem folderItem = new TreeViewItem { IsExpanded = false };
-                folderItem.Header = GetTreeView(folder.Name, _folderIcon);
-                header.Items.Add(folderItem);
+                var folderChild = GetTreeView(folder.Name, _folderIcon); // ПОТОМ НАСТРОИТЬ ИКОНКУ. Не добавляется для папок
+                //TreeViewItem folderChild = new TreeViewItem();
+                //folderChild.Header = folder.Name;
+                header.Items.Add(folderChild);
 
-                AddContent(folderItem, folderPath + "|" + folder.Name, folder.Name, modelList);
+                AddContent(folderChild, folderPath + "|" + folder.Name, folder.Name, modelList);
             }
-
+            //Получили файлы
             List<Model> models = JsonConvert.DeserializeObject<RootContent>(xxx).Models;
+
             foreach (Model model in models)
             {
                 modelList.Add(model);
                 var child = GetTreeView(model.Name, _fileIcon);
-                child.Tag = "Model";
-                child.Margin = new Thickness(30, 0, 0, 0);
                 header.Items.Add(child);
             }
         }
@@ -219,90 +228,50 @@ namespace RsnModelReloader
             }
         }
 
-        // Создаёт в TreeViewItem StackPanel из чекбокс - лого - текст
+        // Создаёт в TreeViewItem StackPanel из лого - текст - чекбокс
         private TreeViewItem GetTreeView(string text, BitmapImage bitImage)
         {
-            TreeViewItem item = new TreeViewItem { IsExpanded = true };
-            StackPanel stackPanel = new StackPanel { Orientation = Orientation.Horizontal };
+            TreeViewItem item = new TreeViewItem
+            {
+                IsExpanded = true
+            };
 
+            //create stackpanel
+            StackPanel stackPanel = new StackPanel
+            {
+                Orientation = Orientation.Horizontal
+            };
+
+            //create image
+            Image image = new Image
+            {
+                Source = bitImage,
+                Width = 16,
+                Height = 16
+            };
+
+            //create label
+            Label label = new Label
+            {
+                Content = text
+            };
+
+            //create checkbox
             CheckBox checkBox = new CheckBox
             {
                 IsChecked = false,
-                VerticalAlignment = VerticalAlignment.Center,
-                Margin = new Thickness(5, 0, 5, 0),
-                Tag = item // Сохраняем ссылку на TreeViewItem в Tag чекбокса
+                VerticalAlignment = VerticalAlignment.Center
             };
 
-            checkBox.Checked += CheckBox_CheckedChanged;
-            checkBox.Unchecked += CheckBox_CheckedChanged;
 
-            Image image = new Image { Source = bitImage, Width = 16, Height = 16, Margin = new Thickness(5, 0, 5, 0) };
-            Label label = new Label { Content = text };
-
-            stackPanel.Children.Add(checkBox);
             stackPanel.Children.Add(image);
             stackPanel.Children.Add(label);
+            stackPanel.Children.Add(checkBox);
 
+            //assign stack
             item.Header = stackPanel;
             return item;
         }
-
-        private void CheckBox_CheckedChanged(object sender, RoutedEventArgs e)
-        {
-            if (sender is CheckBox checkBox && checkBox.Tag is TreeViewItem item)
-            {
-                SetChildrenChecked(item, checkBox.IsChecked == true);
-            }
-        }
-
-
-        private void SetChildrenChecked(TreeViewItem item, bool isChecked)
-        {
-            StackPanel header = item.Header as StackPanel;
-            TreeViewItem parent = item.Parent as TreeViewItem;
-            var tag = item.Tag;
-
-            if (tag == null)
-            {
-                foreach (var childFolder in parent.Items)
-                {
-                    TreeViewItem childItem = childFolder as TreeViewItem;
-                    if (childItem.Items.Count == 0)
-                    {
-                        if (childItem.Header is StackPanel panel)
-                        {
-                            foreach (var child in panel.Children)
-                            {
-                                if (child is CheckBox checkBox)
-                                {
-                                    if (checkBox.IsChecked != isChecked)
-                                        checkBox.IsChecked = isChecked;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    else
-                    {
-                        TreeViewItem secondLevel = childItem.Header as TreeViewItem;
-                        if (secondLevel.Header is StackPanel panel)
-                        {
-                            foreach (var child in panel.Children)
-                            {
-                                if (child is CheckBox checkBox)
-                                {
-                                    if (checkBox.IsChecked != isChecked)
-                                        checkBox.IsChecked = isChecked;
-                                    break;
-                                }
-                            }
-                        }
-                        SetChildrenChecked(secondLevel, isChecked);
-                    }
-                }
-            }
-        }
-
         #endregion
         private RootContent GetRootContent(string folder)
         {
@@ -359,6 +328,8 @@ namespace RsnModelReloader
             foreach (var i in newDictionary)
                 Logger.Log.Info($"Модель {i.Key.Name}, Путь на сервере: {i.Value}");
 
+
+
             // Запуск кода с отделением и сохранением
             OpenCloseFunctions openClose = new OpenCloseFunctions(_app, newDictionary);
 
@@ -396,43 +367,36 @@ namespace RsnModelReloader
             {
                 if (item is TreeViewItem treeViewItem)
                 {
-                    if (treeViewItem.HasHeader == false)
+                    if (treeViewItem.Header.GetType() == typeof(string))
                     {
-                        continue;
+                        CheckUncheck(treeViewItem, state);
                     }
-
-                    if (treeViewItem.Header is StackPanel panel)
+                    else if (treeViewItem.Header.GetType() == typeof(StackPanel))
                     {
-                        foreach (var child in panel.Children)
+                        StackPanel stack = treeViewItem.Header as StackPanel;
+                        foreach (var child in stack.Children)
                         {
-                            if (child is CheckBox checkBox)
+                            if (child is CheckBox checkBox && state != null)
                             {
-                                if (checkBox.IsChecked != state)
-                                    checkBox.IsChecked = state;
-                                break;
+                                checkBox.IsChecked = state;
                             }
-                        }
-                    }
-                    else
-                    {
-                        TreeViewItem secondLevel = treeViewItem.Header as TreeViewItem;
-                        if (secondLevel.Header is StackPanel panel2)
-                        {
-                            foreach (var child in panel2.Children)
+                            else if (child is CheckBox xxx && state == null)
                             {
-                                if (child is CheckBox checkBox)
+                                if (xxx.IsChecked == true)
                                 {
-                                    if (checkBox.IsChecked != state)
-                                        checkBox.IsChecked = state;
-                                    break;
+                                    xxx.IsChecked = false;
+                                }
+                                else if (xxx.IsChecked == false)
+                                {
+                                    xxx.IsChecked = true;
                                 }
                             }
                         }
-                        CheckUncheck(secondLevel, state);
                     }
                 }
             }
         }
+
 
         private void CheckAllChains(object sender, RoutedEventArgs e)
         {
@@ -441,6 +405,10 @@ namespace RsnModelReloader
         private void UnCheckAllChains(object sender, RoutedEventArgs e)
         {
             CheckUncheck(trvContent, false);
+        }
+        private void ToggleAllChains(object sender, RoutedEventArgs e)
+        {
+            CheckUncheck(trvContent);
         }
     }
 }

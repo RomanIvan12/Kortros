@@ -5,8 +5,8 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:RsnModelReloader"
              mc:Ignorable="d" 
-             Height="700"
-             Width="510"
+             Height="500"
+             Width="650"
              Title="Окно выбора файлов с Revit Server"
              WindowStartupLocation="CenterScreen">
     <Grid>
@@ -22,14 +22,21 @@
             <Grid >
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="100"/>
+                    <ColumnDefinition Width="200"/>
                     <ColumnDefinition Width="100"/>
                 </Grid.ColumnDefinitions>
                 <ComboBox x:Name="ServerIPs"
                       Grid.Column="0"
                       Margin="5,5,5,5"
                       IsEditable="False"
-                      SelectedValue="Выберите IP сервера"/>
+                      SelectedValue="Выберите IP сервера"
+                      SelectionChanged="ServerIPs_SelectionChanged"
+                      />
+                <ComboBox x:Name="ProjectName"
+                      Grid.Column="1"
+                      Margin="5,5,5,5"
+                      DisplayMemberPath="Name"
+                      IsEditable="True"/>
                 <Button x:Name="PickProject"
                     Margin="5"
                     Content="Выбрать"
@@ -51,6 +58,7 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Button x:Name="CheckAll"
                 Grid.Column="0"
@@ -66,6 +74,14 @@
                 VerticalAlignment="Stretch"
                 Margin="5, 5, 5, 5"
                 Click="UnCheckAllChains"/>
+            <Button x:Name="ToggleAll"
+                Grid.Column="2"
+                Content="Toggle All"
+                HorizontalAlignment="Stretch"
+                VerticalAlignment="Stretch"
+                Margin="5, 5, 10, 5"
+                Click="ToggleAllChains"
+                />
         </Grid>
         <Button x:Name="Select"
             IsEnabled="False"
