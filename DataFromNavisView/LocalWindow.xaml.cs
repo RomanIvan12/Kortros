@@ -24,10 +24,6 @@ namespace DataFromNavisView
         private readonly string _user = "postgres";
         private readonly string _database = "Projects_parameters";
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 048b79eed65eae5a9f8add08e5b25a2bb0a8e3c8
         private readonly Document _doc;
         private static ForgeTypeId LengthUnits;
         private static ForgeTypeId AreaUnits;
@@ -381,13 +377,9 @@ namespace DataFromNavisView
         public static void InsertMaterialDataIntoSubprojectTable(NpgsqlConnection connection, int exportId, List<MaterialData> dataElements)
         {
             string query = $@"
-<<<<<<< HEAD
             INSERT INTO Materials (export_id, file_name, element_id, material_name, material_key, width, area, area_system, volume, base_element_id, base_element_category) 
             VALUES (@exportId, @fileName, @elementId, @materialName, @materialKey, @width, @area, @area_system, @volume, @baseElementId, @baseElementCategory);";
-=======
-            INSERT INTO Materials (export_id, file_name, element_id, material_name, width, area, area_system, volume, base_element_id, base_element_category) 
-            VALUES (@exportId, @fileName, @elementId, @materialName, @width, @area, @area_system, @volume, @baseElementId, @baseElementCategory);";
->>>>>>> 048b79eed65eae5a9f8add08e5b25a2bb0a8e3c8
+
 
             using (var transaction = connection.BeginTransaction())
             {
@@ -397,10 +389,7 @@ namespace DataFromNavisView
                     cmd.Parameters.Add(new NpgsqlParameter("fileName", NpgsqlDbType.Varchar));
                     cmd.Parameters.Add(new NpgsqlParameter("elementId", NpgsqlDbType.Integer));
                     cmd.Parameters.Add(new NpgsqlParameter("materialName", NpgsqlDbType.Varchar));
-<<<<<<< HEAD
                     cmd.Parameters.Add(new NpgsqlParameter("materialKey", NpgsqlDbType.Varchar));
-=======
->>>>>>> 048b79eed65eae5a9f8add08e5b25a2bb0a8e3c8
                     cmd.Parameters.Add(new NpgsqlParameter("width", NpgsqlDbType.Double));
                     cmd.Parameters.Add(new NpgsqlParameter("area", NpgsqlDbType.Double));
                     cmd.Parameters.Add(new NpgsqlParameter("area_system", NpgsqlDbType.Double));
@@ -414,10 +403,7 @@ namespace DataFromNavisView
                         cmd.Parameters["fileName"].Value = data.FileName;
                         cmd.Parameters["elementId"].Value = data.ElementId;
                         cmd.Parameters["materialName"].Value = data.MaterialName;
-<<<<<<< HEAD
                         cmd.Parameters["materialKey"].Value = data.MaterialKey;
-=======
->>>>>>> 048b79eed65eae5a9f8add08e5b25a2bb0a8e3c8
                         cmd.Parameters["width"].Value = data.Width;
                         cmd.Parameters["area"].Value = data.Area;
                         cmd.Parameters["area_system"].Value = data.AreaSystem;

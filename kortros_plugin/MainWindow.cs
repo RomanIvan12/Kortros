@@ -28,7 +28,6 @@ namespace Kortros
         public Result OnStartup(UIControlledApplication application)
         {
             application.ControlledApplication.ApplicationInitialized += ApplicationInitialized;
-            application.ControlledApplication.DocumentOpened += DocumentOpened;
 
             RibbonPanel panelMEP = RibbonPanel(application, "MEP");
             RibbonPanel panelGeneral = RibbonPanel(application, "Общие");
@@ -45,6 +44,7 @@ namespace Kortros
             }
             catch (Exception e)
             {
+                Debug.WriteLine(e);
             }
 
             try
@@ -58,6 +58,7 @@ namespace Kortros
             }
             catch (Exception e)
             {
+                Debug.WriteLine(e);
             }
 
             try
@@ -76,6 +77,7 @@ namespace Kortros
             }
             catch (Exception e)
             {
+                Debug.WriteLine(e);
             }
             return Result.Succeeded;
         }
@@ -121,12 +123,6 @@ namespace Kortros
             {
                 command.Execute(new UIApplication(sender as Application));
             }
-        }
-
-        private void DocumentOpened(object sender, DocumentOpenedEventArgs e)
-        {
-            Document doc = e.Document;
-            Logger.Log.Info($"{doc.Title} opened");
         }
     }
 }

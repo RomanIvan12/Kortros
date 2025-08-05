@@ -13,9 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Diagnostics;
 using Application = Autodesk.Revit.ApplicationServices.Application;
 using RsnModelReloader.Helpers;
-using Autodesk.Revit.DB;
 using Newtonsoft.Json;
-using System.Runtime.Remoting.Messaging;
 
 namespace RsnModelReloader
 {
@@ -332,7 +330,6 @@ namespace RsnModelReloader
                 {
                     foreach (Folder folderObj in root.Folders)
                     {
-
                         string subfolder = folder + "|" + folderObj.Name;
                         GetModelsDict(dictionary, subfolder);
                     }

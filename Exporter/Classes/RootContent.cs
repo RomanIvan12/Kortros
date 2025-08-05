@@ -34,7 +34,7 @@ namespace ExporterFromRs.Classes
         public string Name { get; set; }
         public long Size { get; set; }
     }
-    public class Model
+    public class Model : IEquatable<Model>
     {
         public object LockContext { get; set; }
         public int LockState { get; set; }
@@ -43,5 +43,17 @@ namespace ExporterFromRs.Classes
         public string Name { get; set; }
         public int ProductVersion { get; set; }
         public int SupportSize { get; set; }
+
+        public bool Equals(Model other)
+        {
+            if (ReferenceEquals(null, other)) return false;
+            if (ReferenceEquals(this, other)) return true;
+            return Name == other.Name && ModelSize == other.ModelSize && ProductVersion == other.ProductVersion && SupportSize == other.SupportSize;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return base.Equals(obj);
+        }
     }
 }

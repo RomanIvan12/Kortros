@@ -5,11 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Windows.Forms;
-using System.IO;
-using log4net;
-using log4net.Appender;
-using log4net.Repository.Hierarchy;
-using System.Linq;
 
 namespace Kortros.Utilities
 {
@@ -30,28 +25,6 @@ namespace Kortros.Utilities
             }
         }
 
-        // Установка Рабочего набора труб и фиттингов в зависимости от комментария в типе системы НЕ АКТУАЛЬНО
-        /*
-        public static void CommentBasedPipeWorkset(Document doc, Element element)
-        {
-            Parameter SystemPipe = element.get_Parameter(BuiltInParameter.RBS_PIPING_SYSTEM_TYPE_PARAM);
-            if (SystemPipe != null && SystemPipe.AsElementId().IntegerValue != -1)
-            {
-                PipingSystemType pipeSystem = (PipingSystemType)doc.GetElement(SystemPipe.AsElementId());
-                if (pipeSystem != null)
-                {
-                    string pipeSystemPosition = pipeSystem.get_Parameter(BuiltInParameter.ALL_MODEL_TYPE_COMMENTS).AsValueString();
-                    foreach (Workset workset in new FilteredWorksetCollector(doc).OfKind(WorksetKind.UserWorkset))
-                    {
-                        if (pipeSystemPosition.PadLeft(2, '0') == workset.Name.Split('.')[0])
-                        {
-                            element.get_Parameter(BuiltInParameter.ELEM_PARTITION_PARAM).Set(workset.Id.IntegerValue);
-                        }
-                    }
-                }
-            }
-        }
-        */
         // Установка Рабочего набора воздуховодов и фиттингов в зависимости от комментария в типе системы
         public static void CommentBasedDuctWorkset(Document doc, Element element)
         {
@@ -155,9 +128,7 @@ namespace Kortros.Utilities
                 }
                 return nestedBuilder.ToString().TrimEnd();
             }
-
             return value.ToString();
         }
-
-        }
+    }
 }

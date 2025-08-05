@@ -166,9 +166,7 @@ namespace ApartmentsProject.ViewModel
             RenameConfig = new RenameConfig(this);
 
             var settings = PluginSettings.Instance;
-
             settings.RevitDoc = RunCommand.Doc;
-            settings.AreCommonParametersMapped = false;
 
             Configurations = new ObservableCollection<Configuration>(RunCommand.ApartmentsProjectLayout.ConfigurationList);
             SelectedConfiguration = RunCommand.ApartmentsProjectLayout.ConfigurationList.First(
@@ -229,7 +227,17 @@ namespace ApartmentsProject.ViewModel
                             }
                         },
                         RoomMatrix = new RoomMatrix(),
-                        ApartmentType = new ApartmentType()
+                        ApartmentType = new ApartmentType(),
+                        NumberingSettings = new NumberingSettings()
+                        {
+                            NumberingDirection = NumberingDirection.Сlockwise.ToString(),
+                            NumberingStart = NumberingStart.Top.ToString(),
+                            InitNumber = 1,
+                            ResetNumberForEachLevel = false,
+                            AddPrefix = false,
+                            FixToNumber = "кв. №",
+                            IsPrefix = true
+                        }
                     };
 
                     foreach (var configItem in Configurations)

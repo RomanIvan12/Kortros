@@ -1,5 +1,4 @@
 ﻿using Autodesk.Revit.DB;
-using log4net;
 using System;
 using System.Collections.Generic;
 using Kortros.Utilities;
@@ -142,7 +141,6 @@ namespace Kortros.Updaters
             if (updaterId != null && UpdaterRegistry.IsUpdaterRegistered(updaterId))
             {
                 UpdaterRegistry.RemoveAllTriggers(updaterId);
-                //TODO elementFilter
 
                 UpdaterRegistry.AddTrigger(updaterId,
                     categoryIdFilter,

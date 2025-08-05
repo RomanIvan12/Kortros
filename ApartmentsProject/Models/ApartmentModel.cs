@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ApartmentsProject.AuxiliaryСlasses;
 using ApartmentsProject.ViewModel;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Architecture;
@@ -14,7 +15,8 @@ namespace ApartmentsProject.Models
     {
         public List<Room> RoomsOfApartment { get; set; }
         public int AptId { get; set; }
-        public string Level { get; set; }
+        public string Level { get; set; } // NAME STRING
+        public Level LevelElement { get; set; } // ELEMENT
         public string Function { get; set; } // По умолчанию - "Квартира". Параметр для возможной обработки МО
         public int NumberOfRooms { get; set; }
         public int NumberOfLivingRooms { get; set; }
@@ -24,6 +26,13 @@ namespace ApartmentsProject.Models
         public double AllRoomsSumArea { get; set; } // Площадь общая
         public double AllRoomsSumAreaNoKof { get; set; } // Площадь общая без коэффициента
         public double AllNonHeatRoomsSumArea { get; set; } // Площадь неотапл. помещений с коэфф.
+
+
+        //ТЕСТОВОЕ ЗНАЧЕНИЕ: геометрический центр
+        public XYZ GeomCenterPoint { get; set; }
+        public string NumberOfAp { get; set; }
+
+
 
         public string ErrorMsg { get; set; }
 
@@ -38,6 +47,13 @@ namespace ApartmentsProject.Models
             AptId = id;
             Function = "Квартира";
             NumberOfRooms = RoomsOfApartment.Count;
+
+
+            // Нахожу геометрический центр квартиры
+            IList<XYZ> mopPts = RoomsOfApartment.Select(room => NumberingExtention.GetRoomCentroid(room)).ToList();
+            GeomCenterPoint = NumberingExtention.GetGeometricCenter(mopPts);
+
+
 
             SetAptId();
             SetType();
@@ -74,6 +90,15 @@ namespace ApartmentsProject.Models
                     sb.Append($"{lvl} ");
                 }
                 Level = sb.ToString();
+            }
+
+            var listOfLevelElement = RoomsOfApartment.Select(room => room.Level).Distinct();
+            if (listOfLevelElement.Count() == 1)
+                LevelElement = listOfLevelElement.FirstOrDefault();
+            else if (listOfLevelElement.Count() > 1)
+            {
+
+                LevelElement = listOfLevelElement.OrderBy(item => item.Elevation).First(); ;
             }
         }
 
@@ -213,6 +238,21 @@ namespace ApartmentsProject.Models
                     counter++;
                 }
             }
+        }
+    }
+
+    public class LevelComparer : IEqualityComparer<Level>
+    {
+        public bool Equals(Level x, Level y)
+        {
+            if (ReferenceEquals(x, y)) return true;
+            if (x is null || y is null) return false;
+            return x.Elevation == y.Elevation && x.Name == y.Name;
+        }
+
+        public int GetHashCode(Level obj)
+        {
+            return (obj.Elevation, obj.Name).GetHashCode();
         }
     }
 

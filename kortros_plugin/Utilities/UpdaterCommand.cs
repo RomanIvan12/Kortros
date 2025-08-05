@@ -20,7 +20,6 @@ namespace Kortros.Utilities
         public Result Execute(UIApplication uiapp)
         {
             Application app = uiapp.Application;
-            Logger.Log.Info($"{app.Username} started Updater Command");
             try
             {
                 uiapp.ViewActivated += new EventHandler<ViewActivatedEventArgs>(ViewActivated);
@@ -41,11 +40,11 @@ namespace Kortros.Utilities
             {
                 _ = new DuctFittinsInsulationUpdater(id, doc);
 
-                DuctInsulationsUpdater ductInsulationsUpdater = new DuctInsulationsUpdater(id);
-                DuctPipeAccessoryUpdater ductPipeAccessoryUpdater = new DuctPipeAccessoryUpdater(id);
-                ElementIdUpdater elementIdUpdater = new ElementIdUpdater(id);
-                PipeDuctFittingsUpdater pipeDuctFittingsUpdater = new PipeDuctFittingsUpdater(id);
-                PipeInsulationUpdater pipeInsulationUpdater = new PipeInsulationUpdater(id);
+                _ = new DuctInsulationsUpdater(id);
+                _ = new DuctPipeAccessoryUpdater(id);
+                _ = new ElementIdUpdater(id);
+                _ = new PipeDuctFittingsUpdater(id);
+                _ = new PipeInsulationUpdater(id);
 
                 if (doc.Title.Contains("_EOM") || doc.Title.Contains("_ЕОМ"))
                 {

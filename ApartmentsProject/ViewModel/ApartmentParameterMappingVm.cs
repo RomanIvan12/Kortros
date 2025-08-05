@@ -26,7 +26,12 @@ namespace ApartmentsProject.ViewModel
         public ParameterMappingModel SelectedModelItem
         {
             get => _selectedModelItem;
-            set => SetProperty(ref _selectedModelItem, value);
+            set 
+            {
+                _selectedModelItem = value;
+                OnPropertyChanged(nameof(SelectedModelItem));
+                // AreAllMappingModelsSet(); лучше убрать, чтобы по кнопке вкладки активировались
+            }
         }
 
         private static Dictionary<string, string> SchemaDictionary { get; set; }
@@ -47,6 +52,25 @@ namespace ApartmentsProject.ViewModel
         private readonly ExternalEventHandler _externalEventHandler;
         private readonly ExternalEvent _externalEvent;
 
+
+        private bool _isAllCorrect;
+        public bool IsAllCorrect
+        {
+            get => _isAllCorrect;
+            set
+            {
+                if (_isAllCorrect == value) return;
+                _isAllCorrect = value;
+                OnPropertyChanged(nameof(IsAllCorrect));
+
+                if (_isAllCorrect)
+                {
+                    // Send global event
+                    EventAggregator.Instance.PublishAllCorrect();
+                }
+
+            }
+        }     
         public ApartmentParameterMappingVm()
         {
             using (Transaction t = new Transaction(RunCommand.Doc, "Initialize Schema"))
@@ -229,6 +253,8 @@ namespace ApartmentsProject.ViewModel
                     .Select(kv => new Dictionary<string, string> { { kv.Key, kv.Value } }).ToList(), Formatting.Indented));
                 t.Commit();
             }
+
+            AreAllMappingModelsSet();
         }
 
         public void CreateParams()
@@ -239,6 +265,7 @@ namespace ApartmentsProject.ViewModel
 
             RefreshComboBoxCollections();
             AreAllMappingModelsSet();
+
             MessageBox.Show("Общие параметры созданы!");
         }
 
@@ -271,18 +298,7 @@ namespace ApartmentsProject.ViewModel
         private void AreAllMappingModelsSet()
         {
             var settings = PluginSettings.Instance;
-            foreach (ParameterMappingModel mappingModel in MappingModel)
-            {
-                if (mappingModel.Status)
-                {
-                    settings.AreCommonParametersMapped = true;
-                }
-                else if (!mappingModel.Status)
-                {
-                    settings.AreCommonParametersMapped = false;
-                    break;
-                }
-            }
+            IsAllCorrect = MappingModel.All(mappingModel => mappingModel.Status);
         }
         
         private void OnPropertyChanged(string propertyName)

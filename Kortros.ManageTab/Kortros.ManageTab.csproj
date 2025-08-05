@@ -83,7 +83,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <EmbeddedResource Include="Resources\Icons\WorksetCreation.png" />
     <EmbeddedResource Include="Resources\WorksetToImport_OV.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </EmbeddedResource>
@@ -102,9 +101,7 @@
     <EmbeddedResource Include="Resources\WorksetToImport_AR.txt" />
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="WorksetCreation.ico">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Icons\WorksetCreation.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

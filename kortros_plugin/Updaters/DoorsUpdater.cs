@@ -1,5 +1,4 @@
 ﻿using Autodesk.Revit.DB;
-using log4net;
 using System;
 using System.Collections.Generic;
 using Kortros.Utilities;
@@ -76,7 +75,6 @@ namespace Kortros.Updaters
                 }
             }
         }
-
         public string GetAdditionalInformation()
         {
             return "Doors Updater Additional Information";

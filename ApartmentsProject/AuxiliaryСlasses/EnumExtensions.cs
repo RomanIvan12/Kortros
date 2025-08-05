@@ -39,6 +39,16 @@ namespace ApartmentsProject.AuxiliaryСlasses
             }
             return default;
         }
+
+        public static T GetEnumValueByDescription<T>(string description, T defaultValue) where T : struct, Enum
+        {
+            foreach (T enumValue in Enum.GetValues(typeof(T)))
+            {
+                if (((Enum)(object)enumValue).GetDescription() == description)
+                    return enumValue;
+            }
+            return defaultValue;
+        }
     }
 
     public class ConfigurationMapper

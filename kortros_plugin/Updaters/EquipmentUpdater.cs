@@ -1,5 +1,4 @@
 ﻿using Autodesk.Revit.DB;
-using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,6 @@ namespace Kortros.Updaters
 
         public EquipmentUpdater(AddInId id)
         {
-            //_logger.Info($"EquipmentUpdater started: {doc.ActiveView.Name}");
             updaterId = new UpdaterId(id, new Guid("AE23C0FF-A071-49E3-AA97-D1518C7879E9"));
             RegisterUpdater();
             RegisterTriggers();
@@ -26,7 +24,6 @@ namespace Kortros.Updaters
                 UpdaterRegistry.IsUpdaterRegistered(updaterId);
                 UpdaterRegistry.UnregisterUpdater(updaterId);
             }
-
             UpdaterRegistry.RegisterUpdater(this, true);
         }
 

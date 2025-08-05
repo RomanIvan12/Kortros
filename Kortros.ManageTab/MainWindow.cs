@@ -17,7 +17,6 @@ namespace Kortros.ManageTab
     {
         public Result OnShutdown(UIControlledApplication application)
         {
-
             return Result.Succeeded;
         }
 
@@ -32,7 +31,7 @@ namespace Kortros.ManageTab
                 {
                     ToolTip = "Создание рабочих наборов",
                     LongDescription = "В зависимости от имени файла открывается окно выбора рабочих наборов",
-                    LargeImage = IcoImageSource("Kortros.ManageTab.WorksetCreation.ico")
+                    LargeImage = IcoImageSource("Kortros.ManageTab.Resources.Icons.WorksetCreation.ico")
                 };
                 _ = panelManage.AddItem(btnWorksetCreationData) as PushButton;
             }

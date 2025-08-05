@@ -1,7 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Plumbing;
 using Kortros.Utilities;
-using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,7 +25,6 @@ namespace Kortros.Updaters
                 UpdaterRegistry.IsUpdaterRegistered(updaterId);
                 UpdaterRegistry.UnregisterUpdater(updaterId);
             }
-
             UpdaterRegistry.RegisterUpdater(this, true);
         }
 
@@ -77,8 +75,6 @@ namespace Kortros.Updaters
 
                         if (hostElem.Category.Id.IntegerValue == (int)BuiltInCategory.OST_PipeCurves)
                         {
-                            //Parameter diamValue = hostElem.get_Parameter(BuiltInParameter.RBS_PIPE_DIAMETER_PARAM);
-                            //double ConvValue = UnitUtils.ConvertFromInternalUnits(diamValue.AsDouble(), displayUnits);
                             ElementId ElementTypeId = element.GetTypeId();
                             Element ElementType = doc.GetElement(ElementTypeId);
                             Parameter Izmer = ElementType.get_Parameter(ADSK_Izm);

@@ -20,122 +20,143 @@ namespace ExporterFromRs
     [Regeneration(RegenerationOption.Manual)]
     internal class DetachFile
     {
+        // JSONConverter converter = new JSONConverter("F:\\18. BIM\\BIM_DATA\\05_Ресурсы\\01_Настройки плагинов\\ModelsExporter"); // создать JSON. СЮДА ПУТЬ СОХРАНЕНИЯ ФАЙЛА JSON в скобках
+        private const string JsonConfigPath = @"F:\18. BIM\BIM_DATA\05_Ресурсы\01_Настройки плагинов\ModelsExporter";
         private Application _app;
+        private readonly Dictionary<Model, string> _selectedDictionary;
+        private readonly string _projectName;
+        private readonly string _revitVersion;
+        private readonly bool _convertIsChecked;
+        private readonly bool _rebarIsChecked;
+        private readonly JSONConverter _converter;
+
         public  DetachFile(Application app, Dictionary<Model, string> selectedDictionary, string projectName, string revitVersion, bool convertIsChecked, bool rebarIsChecked)  //словарь выбранных Модель - путь
         {
             _app = app;
-            JSONConverter converter = new JSONConverter("F:\\18. BIM\\BIM_DATA\\05_Ресурсы\\01_Настройки плагинов\\ModelsExporter"); // создать JSON. СЮДА ПУТЬ СОХРАНЕНИЯ ФАЙЛА JSON в скобках
+            _selectedDictionary = selectedDictionary;
+            _projectName = projectName;
+            _revitVersion = revitVersion;
+            _convertIsChecked = convertIsChecked;
+            _rebarIsChecked = rebarIsChecked;
 
-            string jsonExport = converter.ExpPath;
-            string folderPath = converter.GetJsonValue(jsonExport, revitVersion, projectName);
+            _converter = new JSONConverter(JsonConfigPath);
 
-            if (selectedDictionary != null)
+            ProcessFiles();
+        }
+
+        private void ProcessFiles()
+        {
+            if (_selectedDictionary == null) return;
+
+            string jsonExport = _converter.ExpPath;
+            string folderPath = _converter.GetJsonValue(jsonExport, _revitVersion, _projectName);
+
+            if (Directory.Exists(folderPath))
+                ProcessFilesWithPath(folderPath);
+            else
+                HandleMissingExportPath(jsonExport);
+        }
+
+        private void ProcessFilesWithPath(string folderPath)
+        {
+            string dateFolder = CreateDateSubFolder(folderPath);
+            foreach (string singlePath in _selectedDictionary.Values)
+                ProcessSingleFile(singlePath, dateFolder);
+        }
+        private void ProcessSingleFile(string filePath, string targetFolder)
+        {
+            Document doc = OpenDetachFile(_app, filePath);
+            SaveOpenedFile(doc, targetFolder);
+
+            if (_rebarIsChecked && _convertIsChecked)
+                HideCategories(doc);
+
+            if (_convertIsChecked)
+                CreateNwcFile(doc, targetFolder);
+
+            CloseOpenedFile(doc, targetFolder);
+        }
+
+        private string CreateDateSubFolder(string basePath)
+        {
+            string formattedDate = DateTime.Now.ToString("yyyy-MM-dd");
+            string pathDate = Path.Combine(basePath, formattedDate);
+            Directory.CreateDirectory(pathDate);
+            return pathDate;
+        }
+
+        private void HandleMissingExportPath(string jsonExport)
+        {
+            var dialog = CreatePathErrorDialog();
+
+            switch (dialog.Show())
             {
-                if (Directory.Exists(folderPath))
-                {
-                    foreach (string singlePath in selectedDictionary.Values)
-                    {
-                        Document doc = OpenDetachFile(app, singlePath);
-
-                        string formattedDate = DateTime.Now.ToString("yyyy-MM-dd");
-                        string pathDate = folderPath + "//" + formattedDate;
-                        Directory.CreateDirectory(pathDate);
-                        SaveOpenedFile(doc, pathDate);
-
-                        if(rebarIsChecked && convertIsChecked)
-                            HideCategories(doc);
-                        
-                        if (convertIsChecked)
-                            CreateNwcFile(doc, pathDate);
-
-                        CloseOpenedFile(doc, pathDate);
-                    }
-                }
-                else
-                {
-                    TaskDialog dialog = new TaskDialog("Ошибка пути экспорта файлов")
-                    {
-                        MainInstruction = "Путь к папке экспорта указан неверно",
-                        MainContent = "Файл настройки путей в F:\\18. BIM\\BIM_DATA\\05_Ресурсы\\01_Настройки плагинов\\ModelsExporter не содержит пути для данного проекта." +
-                                      "\n Необходимо выгрузить проект с обновлением json или вручную указать путь экспорта",
-                        CommonButtons = TaskDialogCommonButtons.Cancel
-                    };
-                    dialog.AddCommandLink(TaskDialogCommandLinkId.CommandLink1,
-                        "Указать папку для сохранения и обновить JSON");
-                    dialog.AddCommandLink(TaskDialogCommandLinkId.CommandLink2,
-                        "Указать папку для сохранения для данного сеанса (Без обновления JSON)");
-                    switch (dialog.Show())
-                    {
-                        case TaskDialogResult.CommandLink1:
-
-                            OpenFileDialog jsonDialog = new OpenFileDialog()
-                            {
-                                Title = "Выберите папку для сохранения",
-                                CheckFileExists = false,
-                                FileName = "Папка, которая перезапишет значение в JSON"
-                            };
-                            if (jsonDialog.ShowDialog() == true)
-                            {
-                                string selectedFolder = Path.GetDirectoryName(jsonDialog.FileName);
-                                string filePath = Path.Combine(jsonExport, "pathesToExport.json");
-                                string json = File.ReadAllText(jsonExport);
-                                JObject jsonObject = JObject.Parse(json);
-                                // Имя ключа, который изменится
-                                jsonObject[revitVersion][projectName] = selectedFolder;
-                                File.WriteAllText(jsonExport, jsonObject.ToString());
-
-                                foreach (string singlePath in selectedDictionary.Values)
-                                {
-                                    Document doc = OpenDetachFile(app, singlePath);
-
-                                    string formattedDate = DateTime.Now.ToString("yyyy-MM-dd");
-                                    string pathDate = selectedFolder + "//" + formattedDate;
-                                    Directory.CreateDirectory(pathDate);
-
-                                    SaveOpenedFile(doc, pathDate);
-
-                                    if (rebarIsChecked && convertIsChecked)
-                                        HideCategories(doc);
-                                    if (convertIsChecked)
-                                        CreateNwcFile(doc, pathDate);
-
-                                    CloseOpenedFile(doc, pathDate);
-                                }
-                            }
-                            break;
-                        case TaskDialogResult.CommandLink2:
-
-                            OpenFileDialog folderDialog = new OpenFileDialog()
-                            {
-                                Title = "Выберите папку для сохранения",
-                                CheckFileExists = false,
-                                FileName = "Папка"
-                            };
-                            if (folderDialog.ShowDialog() == true)
-                            {
-                                string selectedFolder = Path.GetDirectoryName(folderDialog.FileName);
-
-                                foreach (string singlePath in selectedDictionary.Values)
-                                {
-                                    Document doc = OpenDetachFile(app, singlePath);
-
-                                    string formattedDate = DateTime.Now.ToString("yyyy-MM-dd");
-                                    string pathDate = selectedFolder + "//" + formattedDate;
-                                    Directory.CreateDirectory(pathDate);
-
-                                    SaveOpenedFile(doc, pathDate);
-                                    if (rebarIsChecked && convertIsChecked)
-                                        HideCategories(doc);
-                                    if (convertIsChecked)
-                                        CreateNwcFile(doc, pathDate);
-                                    CloseOpenedFile(doc, pathDate);
-                                }
-                            }
-                            break;
-                        default: break;
-                    }
-                }
+                case TaskDialogResult.CommandLink1:
+                    HandleJsonUpdateOption(jsonExport);
+                    break;
+                case TaskDialogResult.CommandLink2:
+                    HandleTemporaryFolderOption();
+                    break;
+                default: break;
             }
+        }
+
+        private TaskDialog CreatePathErrorDialog()
+        {
+            TaskDialog dialog = new TaskDialog("Ошибка пути экспорта файлов")
+            {
+                MainInstruction = "Путь к папке экспорта указан неверно",
+                MainContent = "Файл настройки путей в F:\\18. BIM\\BIM_DATA\\05_Ресурсы\\01_Настройки плагинов\\ModelsExporter не содержит пути для данного проекта." +
+                                      "\n Необходимо выгрузить проект с обновлением json или вручную указать путь экспорта",
+                CommonButtons = TaskDialogCommonButtons.Cancel
+            };
+            dialog.AddCommandLink(TaskDialogCommandLinkId.CommandLink1,
+                "Указать папку для сохранения и обновить JSON");
+            dialog.AddCommandLink(TaskDialogCommandLinkId.CommandLink2,
+                "Указать папку для сохранения для данного сеанса (Без обновления JSON)");
+            return dialog;
+        }
+
+        private void HandleJsonUpdateOption(string jsonExport)
+        {
+            var jsonDialog = CreateFolderSelectionDialog("Выберите папку для сохранения");      
+            if (jsonDialog.ShowDialog() == true)
+            {
+                string selectedFolder = Path.GetDirectoryName(jsonDialog.FileName);
+                UpdateJsonExportPath(jsonExport, selectedFolder);
+                ProcessFilesWithPath(selectedFolder);
+            }
+        }
+
+        private void HandleTemporaryFolderOption()
+        {
+            var folderDialog = CreateFolderSelectionDialog("Выберите папку для сохранения");
+
+            if (folderDialog.ShowDialog() == true)
+            {
+                string selectedFolder = Path.GetDirectoryName(folderDialog.FileName);
+                ProcessFilesWithPath(selectedFolder);
+            }
+        }
+
+        private OpenFileDialog CreateFolderSelectionDialog(string title)
+        {
+            return new OpenFileDialog()
+            {
+                Title = title,
+                CheckFileExists = false,
+                FileName = "Папка"
+            };
+        }
+
+        private void UpdateJsonExportPath(string jsonExportPath, string newPath)
+        {
+            string filePath = Path.Combine(jsonExportPath, "pathesToExport.json");
+            string json = File.ReadAllText(jsonExportPath);
+            JObject jsonObject = JObject.Parse(json);
+
+            jsonObject[_revitVersion][_projectName] = newPath;
+            File.WriteAllText(jsonExportPath, jsonObject.ToString());
         }
 
         private Document OpenDetachFile(Application app, string path)
@@ -147,15 +168,13 @@ namespace ExporterFromRs
             };
 
             IList<WorksetPreview> worksets = WorksharingUtils.GetUserWorksetInfo(modelPath);
-            List<WorksetId> wsToOpen = new List<WorksetId>();
             WorksetConfiguration worksetConfiguration = new WorksetConfiguration(WorksetConfigurationOption.CloseAllWorksets);
-            foreach (WorksetPreview workset in worksets)
-            {
-                if (!workset.Name.Contains("Link") && !workset.Name.Contains("#") && !workset.Name.Contains("Связь"))
-                {
-                    wsToOpen.Add(workset.Id);
-                }
-            }
+            List<WorksetId> wsToOpen = worksets
+                .Where(workset => !workset.Name.Contains("Link") &&
+                                    !workset.Name.Contains("#") &&
+                                    !workset.Name.Contains("Связь"))
+                .Select(workset => workset.Id)
+                .ToList();
             worksetConfiguration.Open(wsToOpen);
 
             options.SetOpenWorksetsConfiguration(worksetConfiguration);
@@ -168,50 +187,37 @@ namespace ExporterFromRs
 
         private void CreateNwcFile(Document doc, string folderPath)
         {
-            FilteredElementCollector collector = new FilteredElementCollector(doc);
-            IList<Element> element3dViews = collector.OfClass(typeof(View3D)).WhereElementIsNotElementType().Where(v => v.Name.Contains("Navisworks")).ToList();
-
-            View3D view = null;
-
-            foreach (Element item in element3dViews)
+            View3D element3dView = FindNavisworksView(doc);
+            if (element3dView == null)
             {
-                View3D temp = item as View3D;
-                if (temp.IsTemplate == false)
-                {
-                    view = temp;
-                    break;
-                }
+                Logger.Log.Error($"В проекте {doc.Title} отсутствует 3д вид с названием Navisworks");
+                return;
             }
 
-            if (view != null)
+            NavisworksExportOptions options = new NavisworksExportOptions
             {
-                NavisworksExportOptions options = new NavisworksExportOptions
-                {
-                    ExportScope = NavisworksExportScope.View,
-                    ViewId = view.Id,
-                    ExportLinks = false,
-                    ExportRoomGeometry = false,
-                    ExportUrls = false,
-                    Coordinates = NavisworksCoordinates.Shared
-                };
-
-                //string fileName = doc.Title.Substring(0, doc.Title.LastIndexOf('_'));
-                //string fileName = doc.Title.Contains('_') ? doc.Title.Substring(0, doc.Title.LastIndexOf('_')) : doc.Title;
-                string fileName = doc.Title;
-
-                doc.Export(folderPath,
-                    fileName,
-                    options);
-            }
+                ExportScope = NavisworksExportScope.View,
+                ViewId = element3dView.Id,
+                ExportLinks = false,
+                ExportRoomGeometry = false,
+                ExportUrls = false,
+                Coordinates = NavisworksCoordinates.Shared
+            };
+            //string fileName = doc.Title.Substring(0, doc.Title.LastIndexOf('_'));
+            //string fileName = doc.Title.Contains('_') ? doc.Title.Substring(0, doc.Title.LastIndexOf('_')) : doc.Title;
+            string fileName = doc.Title;
+            doc.Export(folderPath,
+                fileName,
+                options);
         }
-
 
         private void SaveOpenedFile(Document doc, string folderPath)
         {
-            if (MenuWindow.PurgeEl)
+            if (MenuWindow.PurgeElementsEnabled)
                 Purge(_app, doc);
-            
-            string combinedPath = Path.Combine(folderPath, $"{doc.Title}");
+
+            string newName = Path.Combine(folderPath, $"{doc.Title.Substring(0, doc.Title.LastIndexOf('_'))}.rvt");
+
             SaveAsOptions saveOptions = new SaveAsOptions
             {
                 OverwriteExistingFile = true,
@@ -220,23 +226,33 @@ namespace ExporterFromRs
             };
             saveOptions.SetWorksharingOptions(new WorksharingSaveAsOptions { SaveAsCentral = true });
 
-            string newName = combinedPath.Substring(0, combinedPath.LastIndexOf('_')) + ".rvt";
-
             doc.SaveAs(newName, saveOptions);
             Logger.Log.Info($"Model {doc.Title} has been saved. Model path: {newName}");
         }
 
         private void CloseOpenedFile(Document doc, string folderPath)
         {
-            var aaa = doc.Title;
-            var folderName = doc.Title + "_backup";
+            var backupFolderName = doc.Title + "_backup";
             doc.Close();
-
             // Блок удаления папки бэкапа
+            DeleteBackupFolder(folderPath, backupFolderName);
+            Logger.Log.Info("Document closed");
+        }
+
+        private View3D FindNavisworksView(Document doc)
+        {
+            return new FilteredElementCollector(doc)
+                .OfClass(typeof(View3D))
+                .WhereElementIsNotElementType()
+                .Cast<View3D>()
+                .FirstOrDefault(v => v.Name.Contains("Navisworks") && !v.IsTemplate);
+        }
+
+        private void DeleteBackupFolder(string basePath, string folderName)
+        {
             try
             {
-                string fullPath = Path.Combine(folderPath, folderName); // "C:\\Users\\IvannikovRV\\Desktop\\Exporter//2025-02-13" +
-                // A_24_KR_RD_R22_backup
+                string fullPath = Path.Combine(basePath, folderName); // "C:\\Users\\IvannikovRV\\Desktop\\Exporter//2025-02-13" +
                 if (Directory.Exists(fullPath))
                 {
                     Directory.Delete(fullPath, true);
@@ -249,71 +265,61 @@ namespace ExporterFromRs
             {
                 Logger.Log.Info($"Ошибка при удалении папки: {ex.Message}");
             }
-            Logger.Log.Info("Document closed");
         }
 
         private void HideCategories(Document doc)
         {
-            FilteredElementCollector collector = new FilteredElementCollector(doc);
-            IList<Element> element3dViews = collector.OfClass(typeof(View3D)).WhereElementIsNotElementType().Where(v => v.Name.Contains("Navisworks")).ToList();
-
-            View3D view = null;
-
-            foreach (Element item in element3dViews)
+            View3D view = FindNavisworksView(doc);
+            if (view == null)
             {
-                View3D temp = item as View3D;
-                if (temp.IsTemplate == false)
-                {
-                    view = temp;
-                    break;
-                }
+                Logger.Log.Error($"В проекте {doc.Title} отсутствует 3д вид с названием Navisworks");
+                return;
             }
 
-
-            List<BuiltInCategory> listOfBc = new List<BuiltInCategory>()
+            List<Category> categories = new List<BuiltInCategory>()
             {
                 BuiltInCategory.OST_AreaRein,
                 BuiltInCategory.OST_PathRein,
                 BuiltInCategory.OST_Coupler,
                 BuiltInCategory.OST_Rebar
-            };
-
-            List<Category> categories = listOfBc.Select(bic => Category.GetCategory(doc, bic)).ToList();
-
-
-            ElementId viewTemplateId = view.ViewTemplateId;
+            }.Select(bic => Category.GetCategory(doc, bic)).ToList();
 
             using (Transaction tr = new Transaction(doc, "Hide Rebar"))
             {
                 tr.Start();
-
-                if (viewTemplateId.IntegerValue == -1)
+                if (view.ViewTemplateId.IntegerValue == -1)
                 {
                     OverrideGraphicSettings overrideSettings = new OverrideGraphicSettings();
-                    foreach (var category in categories)
-                    {
-                        // Получение настроек графики для вида
-                        view.SetCategoryHidden(category.Id, true);
-                    }
+                    HideCategoriesInView(view, categories);
                 }
                 else
                 {
                     OverrideGraphicSettings overrideSettings = new OverrideGraphicSettings();
-                    foreach (var category in categories)
-                    {
-                        View3D template = doc.GetElement(viewTemplateId) as View3D;
-                        template.SetCategoryHidden(category.Id, true);
-                    }
+                    View3D template = doc.GetElement(view.ViewTemplateId) as View3D;
+                    HideCategoriesInView(view, categories);
                 }
                 tr.Commit();
             }
         }
 
+        private void HideCategoriesInView(View3D view, IEnumerable<Category> categories)
+        {
+            foreach (var category in categories)
+            {
+                try
+                {
+                    view.SetCategoryHidden(category.Id, true);
+                }
+                catch (Exception ex)
+                {
+                    Logger.Log.Error($"Error: {ex.Message}. Category: {category.Name}");
+                }
+            }
+        }
 
         private bool Purge(Application app, Document doc)
         {
             eTransmitUpgradeOMatic eTransmitUpgradeOMatic = new eTransmitUpgradeOMatic(app);
-
             UpgradeFailureType result = eTransmitUpgradeOMatic.purgeUnused(doc);
             return (result == UpgradeFailureType.UpgradeSucceeded);
         }

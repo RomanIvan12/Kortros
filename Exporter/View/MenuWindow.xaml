@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:ExporterFromRs"
              mc:Ignorable="d" 
-             Height="500"
-             Width="650"
+             Height="600"
+             Width="700"
              Title="Окно выбора файлов с Revit Server"
         WindowStartupLocation="CenterScreen">
     <Grid>
@@ -49,13 +49,14 @@
                   Margin="5">
             <Grid>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="1.55*"/>
                     <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="250"/>
                 </Grid.ColumnDefinitions>
                 <TreeView x:Name="trvContent"                          
                           Margin="5"
                           Grid.Column="0"
-                          VerticalAlignment="Stretch"/>
+                          VerticalAlignment="Stretch">
+                </TreeView>
                 <StackPanel x:Name="RevitFiles"
                             VerticalAlignment="Bottom"
                             Margin="5"
@@ -98,7 +99,6 @@
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="*"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Button x:Name="CheckAll"
                     Grid.Column="0"
@@ -114,14 +114,6 @@
                     VerticalAlignment="Stretch"
                     Margin="5, 5, 5, 5"
                     Click="UnCheckAllChains"/>
-            <Button x:Name="ToggleAll"
-                    Grid.Column="2"
-                    Content="Toggle All"
-                    HorizontalAlignment="Stretch"
-                    VerticalAlignment="Stretch"
-                    Margin="5, 5, 10, 5"
-                    Click="ToggleAllChains"
-                    />
         </Grid>
         <Button x:Name="Select"
                 IsEnabled="False"

@@ -102,7 +102,8 @@
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>Copy "$(TargetDir)ExporterFromRs.dll" "$(AppData)\Autodesk\Revit\Addins\2022\Exporter_KRTRS"
-
-if exist "$(AppData)\Autodesk\REVIT\Addins\2022" copy "$(ProjectDir)*.addin" "$(AppData)\Autodesk\REVIT\Addins\2022"</PostBuildEvent>
+Copy "$(TargetDir)ExporterFromRs.dll" "$(AppData)\Autodesk\Revit\Addins\2023\Exporter_KRTRS"
+if exist "$(AppData)\Autodesk\REVIT\Addins\2022" copy "$(ProjectDir)*.addin" "$(AppData)\Autodesk\REVIT\Addins\2022"
+if exist "$(AppData)\Autodesk\REVIT\Addins\2023" copy "$(ProjectDir)*.addin" "$(AppData)\Autodesk\REVIT\Addins\2023"</PostBuildEvent>
   </PropertyGroup>
 </Project>

@@ -17,15 +17,11 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kortros.Architecture.Apartm
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateLinks", "CreateLinks\CreateLinks.csproj", "{174805F6-1976-4692-8F47-A1C28D95A5A1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ElementIdUpdater", "ElementIdUpdater\ElementIdUpdater.csproj", "{4B1D02B7-CD1C-42A5-84DB-4373A5A809E6}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApartmentsProject", "ApartmentsProject\ApartmentsProject.csproj", "{B3E3B8CE-C5A2-4ECE-8833-767736CB3C97}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProgressBar", "ProgressBar\ProgressBar.csproj", "{5B37CC01-F554-442B-A9E8-B7852F5B3936}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataFromNavisView", "DataFromNavisView\DataFromNavisView.csproj", "{773E30A7-9BD0-4396-A16B-7E6B7E7C5A3D}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestForParser", "TestForParser\TestForParser.csproj", "{B78B2132-68EC-48EE-81EE-9D2865EBDBDA}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TechnoPark", "TechnoPark\TechnoPark.csproj", "{F9FDFFC1-6B56-4B69-AA43-524275BA4DE6}"
 EndProject
@@ -88,13 +84,6 @@ Global
 		{174805F6-1976-4692-8F47-A1C28D95A5A1}.Release|Any CPU.Build.0 = Release|Any CPU
 		{174805F6-1976-4692-8F47-A1C28D95A5A1}.Release|x86.ActiveCfg = Release|Any CPU
 		{174805F6-1976-4692-8F47-A1C28D95A5A1}.Release|x86.Build.0 = Release|Any CPU
-		{4B1D02B7-CD1C-42A5-84DB-4373A5A809E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4B1D02B7-CD1C-42A5-84DB-4373A5A809E6}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{4B1D02B7-CD1C-42A5-84DB-4373A5A809E6}.Debug|x86.Build.0 = Debug|Any CPU
-		{4B1D02B7-CD1C-42A5-84DB-4373A5A809E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4B1D02B7-CD1C-42A5-84DB-4373A5A809E6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4B1D02B7-CD1C-42A5-84DB-4373A5A809E6}.Release|x86.ActiveCfg = Release|Any CPU
-		{4B1D02B7-CD1C-42A5-84DB-4373A5A809E6}.Release|x86.Build.0 = Release|Any CPU
 		{B3E3B8CE-C5A2-4ECE-8833-767736CB3C97}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{B3E3B8CE-C5A2-4ECE-8833-767736CB3C97}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B3E3B8CE-C5A2-4ECE-8833-767736CB3C97}.Debug|x86.ActiveCfg = Debug|Any CPU
@@ -119,14 +108,6 @@ Global
 		{773E30A7-9BD0-4396-A16B-7E6B7E7C5A3D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{773E30A7-9BD0-4396-A16B-7E6B7E7C5A3D}.Release|x86.ActiveCfg = Release|Any CPU
 		{773E30A7-9BD0-4396-A16B-7E6B7E7C5A3D}.Release|x86.Build.0 = Release|Any CPU
-		{B78B2132-68EC-48EE-81EE-9D2865EBDBDA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B78B2132-68EC-48EE-81EE-9D2865EBDBDA}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B78B2132-68EC-48EE-81EE-9D2865EBDBDA}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{B78B2132-68EC-48EE-81EE-9D2865EBDBDA}.Debug|x86.Build.0 = Debug|Any CPU
-		{B78B2132-68EC-48EE-81EE-9D2865EBDBDA}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B78B2132-68EC-48EE-81EE-9D2865EBDBDA}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B78B2132-68EC-48EE-81EE-9D2865EBDBDA}.Release|x86.ActiveCfg = Release|Any CPU
-		{B78B2132-68EC-48EE-81EE-9D2865EBDBDA}.Release|x86.Build.0 = Release|Any CPU
 		{F9FDFFC1-6B56-4B69-AA43-524275BA4DE6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F9FDFFC1-6B56-4B69-AA43-524275BA4DE6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F9FDFFC1-6B56-4B69-AA43-524275BA4DE6}.Debug|x86.ActiveCfg = Debug|Any CPU

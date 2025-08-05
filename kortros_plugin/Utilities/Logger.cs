@@ -24,7 +24,6 @@ namespace Kortros.Utilities
 
             string logFilePath = Path.Combine(folderPath, logName);
 
-
             var repositoryName = Assembly.GetExecutingAssembly().GetName().Name; // Уникальное имя репозитория для каждой сборки
             var repository = LogManager.CreateRepository(repositoryName);
 

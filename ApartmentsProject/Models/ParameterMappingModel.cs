@@ -11,7 +11,6 @@ namespace ApartmentsProject.Models
 {
     public class ParameterMappingModel : INotifyPropertyChanged
     {
-
         private CollectionViewSource _filteredParametersView;
         public CollectionViewSource FilteredParametersView
         {

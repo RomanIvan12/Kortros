@@ -42,25 +42,15 @@ namespace ApartmentsProject
                 return Result.Failed;
             }
 
-            var roomParameters = roomElement.Parameters;
-
-            if (roomElement.LookupParameter(Properties.Resources.ParameterOfGroup) == null)
-            {
-                MessageBox.Show("Необходимо создать параметр ПО_Функц. назначение для помещений и заполнить его " +
-                                "значением Квартира для помещений квартир");
-                Logger.Log.Error("Необходимо создать параметр ПО_Функц. назначение для помещений и заполнить его" +
-                                "значением Квартира для помещений квартир");
-                return Result.Failed;
-            }
-
             try
             {
                 CreateCommonParameters.ExtractFileToTemporaryFile("Apts_KRTRS.txt");
                 var service = ConfigurationService.Instance;
                 ApartmentsProjectLayout layout = service.LoadConfiguration();
                 service.SaveConfiguration(layout);
-
                 ApartmentsProjectLayout = layout;
+
+                PluginSettings.Instance.RoomCollector = new FilteredElementCollector(Doc).OfCategory(BuiltInCategory.OST_Rooms);
 
                 MainWindow = new MainWindow();
                 MainWindow.Show();
@@ -185,4 +175,110 @@ namespace ApartmentsProject
             return Result.Succeeded;
         }
     }
+
+    [Transaction(TransactionMode.Manual)]
+    [Regeneration(RegenerationOption.Manual)]
+    public class TestCentroid : IExternalCommand
+    {
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            var doc = commandData.Application.ActiveUIDocument.Document;
+            var application = commandData.Application.Application;
+
+            var point = NumberingExtention.GetRoomCentroid(doc.GetElement(new ElementId(4253421)) as Room);
+            PlaceMark(point, doc);        
+            return Result.Succeeded;
+        }
+        private void PlaceMark(XYZ point, Document doc)
+        {
+
+            using (Transaction tr = new Transaction(doc, "test"))
+            {
+                tr.Start();
+                FamilySymbol symbol = doc.GetElement(new ElementId(6629955)) as FamilySymbol;
+
+                doc.Create.NewFamilyInstance(point, symbol, doc.ActiveView);
+                // OneLevelBased
+                tr.Commit();
+            }
+        }
+    }
+
+    [Transaction(TransactionMode.Manual)]
+    [Regeneration(RegenerationOption.Manual)]
+    public class TestRoomBoudaries : IExternalCommand
+    {
+        public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
+        {
+            var document = commandData.Application.ActiveUIDocument.Document;
+            var application = commandData.Application.Application;
+
+            Room room = document.GetElement(new ElementId(4253381)) as Room;
+
+            IList<IList<BoundarySegment>> boundaries = room.GetBoundarySegments(new SpatialElementBoundaryOptions());
+
+            // Работаем только с первым замкнутым контуром (основной контур)
+            IList<BoundarySegment> mainBoundary = boundaries[0];
+
+            // Получаем список точек
+            List<XYZ> contourPoints = new List<XYZ>();
+            foreach (var seg in mainBoundary)
+            {
+                // Добавляем начало сегмента (конец - будет добавлен как начало следующего сегмента)
+                contourPoints.Add(seg.GetCurve().GetEndPoint(0));
+            }
+
+            // Строим полиэлайн
+            PolyLine polyline = PolyLine.Create(contourPoints);
+
+            // Смещаем контур на 100 мм внутрь
+            double offsetMm = 100.0;
+            double offsetFt = UnitUtils.ConvertToInternalUnits(offsetMm, UnitTypeId.Millimeters);
+
+            // Для смещения используем метод CurveLoop.CreateViaOffset
+            CurveLoop originalLoop = new CurveLoop();
+            foreach (var seg in mainBoundary)
+            {
+                originalLoop.Append(seg.GetCurve());
+            }
+
+            XYZ point = room.Location is LocationPoint lp ? lp.Point.Z > 0 ? XYZ.BasisZ : -XYZ.BasisZ : XYZ.BasisZ;
+
+            var offsetLoops = CurveLoop.CreateViaOffset(
+                originalLoop, -offsetFt, point);
+
+            // Берём первый смещённый контур
+            //CurveLoop offsetLoop = offsetLoops[0];
+
+            // Вычисляем площади
+            double externalArea = Math.Abs(GetCurveLoopArea(originalLoop));
+            double internalArea = Math.Abs(GetCurveLoopArea(offsetLoops));
+            double diffArea = externalArea - internalArea;
+
+            // Переводим площадь в м²
+            double extAreaSqM = UnitUtils.ConvertFromInternalUnits(externalArea, UnitTypeId.SquareMeters);
+            double intAreaSqM = UnitUtils.ConvertFromInternalUnits(internalArea, UnitTypeId.SquareMeters);
+            double diffAreaSqM = UnitUtils.ConvertFromInternalUnits(diffArea, UnitTypeId.SquareMeters);
+
+            TaskDialog.Show("Разность площадей", $"Исходная площадь: {extAreaSqM:F2} м²\n" +
+                                                 $"Внутренняя (после смещения): {intAreaSqM:F2} м²\n" +
+                                                 $"Разность: {diffAreaSqM:F2} м²");
+
+            return Result.Succeeded;
+        }
+        private double GetCurveLoopArea(CurveLoop loop)
+        {
+            List<XYZ> pts = loop.Select(c => c.GetEndPoint(0)).ToList();
+            // Площадь по формуле шнурков (Shoelace/Гаусса)
+            double area = 0;
+            for (int i = 0; i < pts.Count; i++)
+            {
+                XYZ p1 = pts[i];
+                XYZ p2 = pts[(i + 1) % pts.Count];
+                area += (p1.X * p2.Y - p2.X * p1.Y);
+            }
+            return Math.Abs(area) * 0.5;
+        }
+    }
+
 }

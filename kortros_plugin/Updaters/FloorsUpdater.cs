@@ -1,5 +1,4 @@
 ﻿using Autodesk.Revit.DB;
-using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,9 +34,6 @@ namespace Kortros.Updaters
             {
                 UpdaterRegistry.RemoveAllTriggers(updaterId);
 
-                //UpdaterRegistry.AddTrigger(updaterId,
-                //     floorFilter,
-                //     Element.GetChangeTypeParameter(new ElementId(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM))); // ПРОВЕРИТЬ, ВОЗМОЖНО УБРАТЬ
                 UpdaterRegistry.AddTrigger(updaterId,
                     floorFilter,
                     Element.GetChangeTypeElementAddition());
@@ -50,7 +46,6 @@ namespace Kortros.Updaters
         public void Execute(UpdaterData data)
         { 
             Document doc = data.GetDocument();
-
             Guid KRTRS_Izm = new Guid("7621a737-0095-43fe-93fd-ee4a267a6cab");
 
             IEnumerable<ElementId> combinedCollection = data.GetAddedElementIds().Concat(data.GetModifiedElementIds()); //новые и измененные
@@ -65,7 +60,6 @@ namespace Kortros.Updaters
                     if (element.GroupId.IntegerValue == -1)
                     {
                         Floor floor = element as Floor;
-
                         // Заполнение KRTRS_Единица измерения
                         try
                         {
@@ -77,7 +71,6 @@ namespace Kortros.Updaters
                         }
 
                         ElementId materialId = floor.FloorType.get_Parameter(BuiltInParameter.STRUCTURAL_MATERIAL_PARAM).AsElementId();
-
                         Material material = materialId != null ? doc.GetElement(materialId) as Material : null;
                         string matName = material != null ? doc.GetElement(materialId).Name : null;
 

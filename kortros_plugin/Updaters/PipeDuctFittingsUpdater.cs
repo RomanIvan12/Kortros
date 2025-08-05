@@ -1,6 +1,5 @@
 ﻿using Autodesk.Revit.DB;
 using Kortros.Utilities;
-using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +11,6 @@ namespace Kortros.Updaters
         static UpdaterId updaterId;
         public PipeDuctFittingsUpdater(AddInId id)
         {
-            //_logger.Info($"PipeDuctFittingsUpdater started: {doc.ActiveView.Name}");
             updaterId = new UpdaterId(id, new Guid("A92AF23F-7F6F-4943-A36C-D6DCEAD35953"));
             RegisterUpdater();
             RegisterTriggers();
@@ -24,7 +22,6 @@ namespace Kortros.Updaters
                 UpdaterRegistry.IsUpdaterRegistered(updaterId);
                 UpdaterRegistry.UnregisterUpdater(updaterId);
             }
-
             UpdaterRegistry.RegisterUpdater(this, true);
         }
 
@@ -79,15 +76,6 @@ namespace Kortros.Updaters
                     try
                     {
                         element.get_Parameter(KRTRS_Count).Set(1);
-                        //else if (element.Category.Id.IntegerValue == (int)BuiltInCategory.OST_DuctFitting)
-                        //{
-                        //    double zapasValue = 1;
-                        //    if (UtilFunctions.GetGlobalParameterDoubleValueByName(doc, "Запас") != null)
-                        //        zapasValue = (double)UtilFunctions.GetGlobalParameterDoubleValueByName(doc, "Запас");
-                        //    double adsk_ares = element.get_Parameter(ADSK_area).AsDouble();
-                        //    double ConvValue = UnitUtils.ConvertFromInternalUnits(adsk_ares, displayUnitsArea);
-                        //    element.get_Parameter(KRTRS_Count).Set(ConvValue); //*zapasValue
-                        //}
                     }
                     catch (Exception ex)
                     {
@@ -144,7 +132,6 @@ namespace Kortros.Updaters
                 }
             }
         }
-
         public string GetAdditionalInformation()
         {
             return "Pipe-Duct Fittings Updater Additional Information";

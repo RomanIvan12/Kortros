@@ -256,6 +256,16 @@ namespace ApartmentsProject.AuxiliaryСlasses
                                                 NonContainRooms = "Кухня"
                                             },
                                         }
+                            },
+                            NumberingSettings = new NumberingSettings()
+                            {
+                                NumberingDirection = NumberingDirection.Сlockwise.ToString(),
+                                NumberingStart = NumberingStart.Top.ToString(),
+                                InitNumber = 1,
+                                ResetNumberForEachLevel = false,
+                                AddPrefix = false,
+                                FixToNumber = "кв. №",
+                                IsPrefix = true
                             }
                         }
                     }

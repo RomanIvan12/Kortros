@@ -16,6 +16,9 @@ using System.Windows.Media;
 using Autodesk.Revit.UI.Selection;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
+using System.Windows.Shapes;
+using Line = Autodesk.Revit.DB.Line;
 
 namespace ApartmentsProject.ViewModel
 {
@@ -23,7 +26,6 @@ namespace ApartmentsProject.ViewModel
     {
         public List<Room> RoomsToCalculate { get; set; } = new List<Room>();
         public List<Level> LevelsToCalcualte { get; set; } = new List<Level>();
-
 
         private static Configuration _selectedConfiguration;
         public Configuration SelectedConfiguration
@@ -234,7 +236,7 @@ namespace ApartmentsProject.ViewModel
                 ApartmentsOfObservableCollection = ApartmentRepository.Instance.Apartments;
                 t.Commit();
             }
-        }        
+        }
 
         private void SelectRooms()
         {
@@ -443,13 +445,22 @@ namespace ApartmentsProject.ViewModel
             foreach (var room in apartmentModel.RoomsOfApartment)
             {
                 var area = room.get_Parameter(BuiltInParameter.ROOM_AREA).AsDouble();
-                var convertedArea = UnitUtils.ConvertFromInternalUnits(area, areaUnits);
 
-                var test = _selectedConfiguration.Settings.AreaRoundType;
-                var test2 = EnumExtensions.GetEnumDescription<AreaRoundType>(_selectedConfiguration.Settings.AreaRoundType, AreaRoundType.Units);
+                Guid finishingGuid = ApartmentParameterMappingVm.MappingModel
+                .First(item => item.DataOrigin.Name == "KRT_Толщина черновой отделки")
+                .ParameterToMatch.Guid;
+                var finishingThickness = room.get_Parameter(finishingGuid).AsDouble();
 
-                //var selectedRounding = Double.Parse(_selectedConfiguration.Settings.AreaRoundType);
-                var selectedRounding = double.Parse(test2, CultureInfo.InvariantCulture);
+                if (finishingThickness != 0)
+                {
+                    area = AreaWithOffset(room, finishingThickness);
+                }
+                
+                var convertedArea = UnitUtils.ConvertFromInternalUnits(area, areaUnits); // Площать в ревите
+
+                var roundingValue = EnumExtensions.GetEnumDescription<AreaRoundType>(_selectedConfiguration.Settings.AreaRoundType, AreaRoundType.Units);
+
+                var selectedRounding = double.Parse(roundingValue, CultureInfo.InvariantCulture);
 
                 var roundedValue = RoundTo(
                     convertedArea,
@@ -531,7 +542,56 @@ namespace ApartmentsProject.ViewModel
             OnPropertyChanged(propertyName);
             return true;
         }
+        private double AreaWithOffset(Room room, double offsetValue)
+        {
+            IList<IList<BoundarySegment>> boundaries = room.GetBoundarySegments(new SpatialElementBoundaryOptions());
+
+            IList<BoundarySegment> mainBoundary = boundaries[0];
+
+            // Получаем список точек
+            List<XYZ> contourPoints = new List<XYZ>();
+            foreach (var seg in mainBoundary)
+            {
+                // Добавляем начало сегмента (конец - будет добавлен как начало следующего сегмента)
+                contourPoints.Add(seg.GetCurve().GetEndPoint(0));
+            }
+            PolyLine polyline = PolyLine.Create(contourPoints);
+            double offsetFt = UnitUtils.ConvertToInternalUnits(offsetValue, UnitTypeId.Millimeters);
+
+            // Для смещения используем метод CurveLoop.CreateViaOffset
+            CurveLoop originalLoop = new CurveLoop();
+            foreach (var seg in mainBoundary)
+            {
+                originalLoop.Append(seg.GetCurve());
+            }
+            XYZ point = room.Location is LocationPoint lp ? lp.Point.Z > 0 ? XYZ.BasisZ : -XYZ.BasisZ : XYZ.BasisZ;
+
+            var offsetLoops = CurveLoop.CreateViaOffset(
+                originalLoop, -offsetFt, point);
+
+            //if (offsetLoops.Count() == 0)
+            //{
+            //    // ДОБАВИТЬ В ИСКЛЮЧЕНИЯ
+            //    return 0;
+            //}
+            //return UnitUtils.ConvertFromInternalUnits(internalArea, UnitTypeId.SquareMeters);
+            return Math.Abs(GetCurveLoopArea(offsetLoops));
+        }
+        private double GetCurveLoopArea(CurveLoop loop)
+        {
+            List<XYZ> pts = loop.Select(c => c.GetEndPoint(0)).ToList();
+            // Площадь по формуле шнурков (Shoelace/Гаусса)
+            double area = 0;
+            for (int i = 0; i < pts.Count; i++)
+            {
+                XYZ p1 = pts[i];
+                XYZ p2 = pts[(i + 1) % pts.Count];
+                area += (p1.X * p2.Y - p2.X * p1.Y);
+            }
+            return Math.Abs(area) * 0.5;
+        }
     }
+
     public class RoomSelectionFilter : ISelectionFilter
     {
         public bool AllowElement(Element elem)

@@ -1,7 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Mechanical;
 using Kortros.Utilities;
-using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;

@@ -5,10 +5,11 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:local="clr-namespace:ApartmentsProject.View"
              xmlns:vm="clr-namespace:ApartmentsProject.ViewModel"
+             xmlns:m="clr-namespace:ApartmentsProject.Models"
              xmlns:uc="clr-namespace:ApartmentsProject.View.Controls"
              xmlns:cv="clr-namespace:ApartmentsProject.ViewModel.Utilities.Converters"
              mc:Ignorable="d" 
-             Height="1000" Width="900"
+             Height="1000" Width="900" MinWidth="600" MinHeight="600"
              WindowStartupLocation="CenterScreen">
     <Window.Resources>
         <ResourceDictionary>
@@ -16,8 +17,9 @@
             <vm:ApartmentParameterMappingVm x:Key="vm_mapping"/>
             <vm:SourceDataVm x:Key="Vm_SourceData"/>
             <vm:VerificationVm x:Key="Vm_verification"/>
+            <vm:NumberingVm x:Key="Vm_Numbering"/>
             <vm:ApartmentCreationCalculationVm x:Key="Vm_CreationCalculation"/>
-            <!--<cv:ApartmentNameToBrushMultiConverter x:Key="ApartmentNameToBrushMultiConverter"/>-->
+            
             <cv:ListToStringConverter x:Key="ListToStringConverter"/>
             <cv:BoolToIconConverter x:Key="BoolToIconConverter"/>
             <cv:RoomTypeConverter x:Key="RoomTypeConverter"/>
@@ -25,7 +27,7 @@
             <cv:RoomMatrixEntryBrushConverter x:Key="RoomEntryBrushConverter"/>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid>
+    <Grid DataContext="{StaticResource vm_mapping}">
         <TabControl TabStripPlacement="Left">
             <TabItem Header="Настройка">
                 <Grid DataContext="{StaticResource Vm_Settings}">
@@ -37,16 +39,16 @@
                         <RowDefinition Height="50"/>
                         <RowDefinition Height="30"/>
                         <RowDefinition Height="50"/>
+                        <RowDefinition Height="auto"/>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="50"/>
                     </Grid.RowDefinitions>
                     <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center"
                                FontSize="16" FontWeight="Bold"
                                Text="ИНФОРМАЦИОННОЕ ОКНО"/>
                     <Grid Row="1">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="200"/>
-                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="*" MinWidth="200"/>
                             <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="50"/>
@@ -54,7 +56,7 @@
                         <TextBlock Grid.Column="0" Margin="10,0"
                                    VerticalAlignment="Center"
                                    Text="Текущая конфигурация"/>
-                        <ComboBox Grid.Column="1" Margin="10" VerticalContentAlignment="Center"
+                        <ComboBox Grid.Column="1" Margin="10, 10, 100, 10" VerticalContentAlignment="Center"
                                   ItemsSource="{Binding Configurations, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   DisplayMemberPath="Name" 
                                   SelectedItem="{Binding SelectedConfiguration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -84,6 +86,13 @@
                         <TextBox Grid.Column="1" Margin="10" Width="200" HorizontalAlignment="Left"
                                  VerticalContentAlignment="Center"
                                  Text="{Binding ValueFunc, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Rectangle Grid.Column="2" Width="40" Height="40" Fill="LightBlue">
+                            <Rectangle.ToolTip>
+                                <ToolTip Content="Инфо"
+                                         ToolTipService.InitialShowDelay="10"
+                                         Background="LightYellow" Padding="8"/>
+                            </Rectangle.ToolTip>
+                        </Rectangle>
                     </Grid>
                     <TextBlock Grid.Row="5" Margin="10,0,0,15"
                                VerticalAlignment="Center" HorizontalAlignment="Left"
@@ -113,7 +122,7 @@
                             <Grid Row="0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="300"/>
+                                    <ColumnDefinition Width="330"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Margin="10,0"
                                            VerticalAlignment="Center" TextWrapping="Wrap" TextTrimming="None"
@@ -125,7 +134,7 @@
                             <Grid Row="1">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="300"/>
+                                    <ColumnDefinition Width="330"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Margin="10,0"
                                            VerticalAlignment="Center" TextWrapping="Wrap" TextTrimming="None"
@@ -138,7 +147,7 @@
                             <Grid Row="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="300"/>
+                                    <ColumnDefinition Width="330"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Margin="10,0"
                                            VerticalAlignment="Center" TextWrapping="Wrap" TextTrimming="None"
@@ -151,7 +160,7 @@
                             <Grid Row="3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="300"/>
+                                    <ColumnDefinition Width="330"/>
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Column="0" Margin="10,0"
                                            VerticalAlignment="Center" TextWrapping="Wrap" TextTrimming="None"
@@ -181,7 +190,6 @@
                             CornerRadius="5" 
                             Margin="5" 
                             VerticalAlignment="Stretch"/>
-
                     <TextBlock Grid.Row="0" FontSize="12" FontWeight="Light" TextWrapping="Wrap" TextTrimming="None"
                                Margin="10"
                                Text=" Инструкция&#10; Все помещения в проекте должны иметь общие параметры,
@@ -217,7 +225,7 @@
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
 
-                            <DataGridTemplateColumn Header="Используемый параметр" Width="*">
+                            <DataGridTemplateColumn Header="Используемый параметр" Width="*" MinWidth="300">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <ComboBox ItemsSource="{Binding FilteredParametersView.View}"
@@ -254,7 +262,8 @@
                     </Grid>
                 </Grid>
             </TabItem>
-            <TabItem Header="Источники">
+            <TabItem Header="Источники"
+                     IsEnabled="{Binding IsAllCorrect, UpdateSourceTrigger=PropertyChanged}">
                 <TabControl>
                     <TabItem Header="Матрица помещений">
                         <Grid DataContext="{StaticResource Vm_SourceData}">
@@ -508,7 +517,8 @@
                     </TabItem>
                 </TabControl>
             </TabItem>
-            <TabItem Header="Исходная проверка">
+            <TabItem Header="Исходная проверка"
+                     IsEnabled="{Binding IsAllCorrect, UpdateSourceTrigger=PropertyChanged}">
                 <Grid Margin="10"
                       DataContext="{StaticResource Vm_verification}">
                     <Grid.RowDefinitions>
@@ -565,7 +575,7 @@
 
             </TabItem>
             <TabItem Header="Сбор и расчёт кваритр"
-                     IsEnabled="{Binding AreCommonParametersMapped, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                     IsEnabled="{Binding IsAllCorrect, UpdateSourceTrigger=PropertyChanged}">
                 <Grid DataContext="{StaticResource Vm_CreationCalculation}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
@@ -616,8 +626,8 @@
                                   SelectedItem="{Binding ViewOrProjectPick, Mode=TwoWay,
                                                 UpdateSourceTrigger=PropertyChanged}"/>
                             <Button Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Left" Content="Собрать" 
-                                Margin="10" Width="100" FontSize="15"
-                                Command="{Binding MainCalculationCommand}"/>
+                                    Margin="10" Width="100" FontSize="15"
+                                    Command="{Binding MainCalculationCommand}"/>
                         </Grid>
 
                         <DataGrid ItemsSource="{Binding ApartmentsOfObservableCollection, Mode = OneWay, UpdateSourceTrigger=PropertyChanged}"
@@ -791,6 +801,141 @@
                             </StackPanel>
                         </Grid>
                     </Grid>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Нумерация" IsEnabled="{Binding IsAllCorrect, UpdateSourceTrigger=PropertyChanged}">
+                <Grid DataContext="{StaticResource Vm_Numbering}">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="100"/>
+                        <RowDefinition Height="100"/>
+                        <RowDefinition Height="300"/>
+                        <RowDefinition Height="50"/>
+                        <RowDefinition Height="*"/>
+                    </Grid.RowDefinitions>
+                    <GroupBox Grid.Row="0" Header="Инструкция" FontSize="14" FontWeight="DemiBold"
+                              Background="#FFD4D4D4" Margin="5">
+                        <TextBlock FontSize="13" FontWeight="Light" TextWrapping="Wrap" TextTrimming="None"
+                                   Text="Нумерация происходит для одного корпуса одной секции. Нумерация происходит по часовой стрелке.
+Нумерация начинается с... ДОПИСАТЬ ПОТОМ"/>
+                    </GroupBox>
+                    <GroupBox Grid.Row="1" Header="Целевой параметр" FontSize="14" FontWeight="DemiBold"
+                              Background="#FFD4D4D4" Margin="5">
+                        <Grid VerticalAlignment="Center" Margin="0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="150"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" Text="Целевой параметр: " 
+                                       FontWeight="Light" Margin="5" VerticalAlignment="Center"/>
+                            <TextBox Grid.Column="1" HorizontalAlignment="Stretch" 
+                                     IsEnabled="False" VerticalAlignment="Center" Margin="5,0,5,0"
+                                     Text="{Binding ParameterName, UpdateSourceTrigger=PropertyChanged}"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Grid.Row="2" Header="Настрйки нумерации" FontSize="14" FontWeight="DemiBold"
+                              Background="#FFD4D4D4" Margin="5">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                                <RowDefinition Height="*"/>
+                            </Grid.RowDefinitions>
+                            <Grid Grid.Row="0" VerticalAlignment="Center" Margin="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Направление нумерации: " 
+                                           FontWeight="Light" Margin="5" VerticalAlignment="Center"/>
+                                <ComboBox Grid.Column="1" HorizontalAlignment="Stretch" 
+                                          IsEditable="True" VerticalAlignment="Center" Margin="5,0,5,0"
+                                          ItemsSource="{Binding NumberingDirectionOptions}"
+                                          SelectedItem="{Binding SelectedNumberingDirection, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </Grid>
+                            <Grid Grid.Row="1" VerticalAlignment="Center" Margin="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Начальный номер: " 
+                                           FontWeight="Light" Margin="5" VerticalAlignment="Center"/>
+                                <TextBox Grid.Column="1" HorizontalAlignment="Left" Width="100"
+                                         VerticalAlignment="Center" Margin="5,0,5,0"
+                                         Text="{Binding InitNumber, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </Grid>
+                            <Grid Grid.Row="2" VerticalAlignment="Center" Margin="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Сторона отсчёта нумерации: " 
+                                           FontWeight="Light" Margin="5" VerticalAlignment="Center"/>
+                                <ComboBox Grid.Column="1" HorizontalAlignment="Stretch" 
+                                          IsEditable="True" VerticalAlignment="Center" Margin="5,0,5,0"
+                                          ItemsSource="{Binding NumberingStartOptions}"
+                                          SelectedItem="{Binding SelectedNumberingStart, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                            </Grid>
+                            <Grid Grid.Row="3" VerticalAlignment="Center" Margin="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <CheckBox Grid.Column="0" Margin="5" VerticalAlignment="Center"
+                                          IsChecked="{Binding IsEnumForEachLevel, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Column="1" FontWeight="Light" Text="Сбрасывать нумерацию для каждого уровня (несквозная нумерация)"/>
+                            </Grid>
+                            <Grid Grid.Row="4" VerticalAlignment="Center" Margin="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <CheckBox Grid.Column="0" Margin="5" VerticalAlignment="Center"
+                                          IsChecked="{Binding AddPrefix, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <TextBlock Grid.Column="1" FontWeight="Light" Text="Добавить суффикс или префикс"/>
+                            </Grid>
+                            <Grid Grid.Row="5" VerticalAlignment="Center" Margin="0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="200"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="100"/>
+                                    <ColumnDefinition Width="100"/>
+                                </Grid.ColumnDefinitions>
+                                <TextBlock Grid.Column="0" Text="Добавочный текст: " 
+                                           FontWeight="Light" Margin="5" VerticalAlignment="Center"/>
+                                <TextBox Grid.Column="1" HorizontalAlignment="Stretch" 
+                                         IsEnabled="{Binding AddPrefix}" VerticalAlignment="Center" Margin="5,0,5,0"
+                                         Text="{Binding PrefixValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <RadioButton Grid.Column="2" Content="Префикс" GroupName="PrefixSuffix"
+                                             FontWeight="Light" Margin="5" VerticalAlignment="Center"
+                                             IsChecked="{Binding IsPrefix, Mode=TwoWay}"
+                                             IsEnabled="{Binding AddPrefix}"/>
+                                <RadioButton Grid.Column="3" Content="Суффикс" GroupName="PrefixSuffix"
+                                             FontWeight="Light" Margin="5" VerticalAlignment="Center"
+                                             IsEnabled="{Binding AddPrefix}"/>
+                            </Grid>
+                        </Grid>
+                    </GroupBox>
+
+                    <Grid Grid.Row="3">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="1.5*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox DataContext="{StaticResource Vm_CreationCalculation}"
+                                 Grid.Column="1" Margin="10,8" VerticalContentAlignment="Center" HorizontalContentAlignment="Left"
+                                 Text="{Binding ViewOrProjectPick, 
+                            Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button Grid.Column="2" Margin="10,8" Content="Выполнить нумерацию"
+                                Command="{Binding CreateNumOnView}"/>
+                    </Grid>
+
+
+
                 </Grid>
             </TabItem>
         </TabControl>

@@ -1,5 +1,6 @@
 ﻿using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Events;
 using Autodesk.Revit.UI;
 using Autodesk.Revit.UI.Events;
 using System;
@@ -10,6 +11,7 @@ using System.Linq;
 using System.Reflection;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using static ExporterFromRs.ExporterApplication;
 
 namespace ExporterFromRs
 {
@@ -58,10 +60,9 @@ namespace ExporterFromRs
             return Result.Succeeded;
         }
 
-        void DialogShowErrorMessage(object sender, DialogBoxShowingEventArgs args)
+        public void DialogShowErrorMessage (object sender, DialogBoxShowingEventArgs args)
         {
             TaskDialogShowingEventArgs args2 = args as TaskDialogShowingEventArgs;
-
             string DialogId = args2.DialogId;
             if (DialogId == "TaskDialog_Missing_Third_Party_Updater" || DialogId == "TaskDialog_Missing_Third_Party_Updaters")
             {

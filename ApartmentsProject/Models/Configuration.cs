@@ -76,6 +76,10 @@ namespace ApartmentsProject.Models
         [XmlElement("ApartmentType")]
         public ApartmentType ApartmentType { get; set; }
 
+        [XmlElement("NumberingSettings")]
+        public NumberingSettings NumberingSettings { get; set; }
+
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName)
@@ -106,6 +110,50 @@ namespace ApartmentsProject.Models
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
     }
+
+    public class NumberingSettings : INotifyPropertyChanged
+    {
+        [XmlElement("NumberingDirection")]
+        public string NumberingDirection { get; set; }
+
+        [XmlElement("NumberingStart")]
+        public string NumberingStart { get; set; }
+
+        [XmlElement("InitNumber")]
+        public int InitNumber { get; set; }
+
+        [XmlElement("ResetNumberForEachLevel")]
+        public bool ResetNumberForEachLevel { get; set; }
+
+        [XmlElement("AddPrefix")]
+        public bool AddPrefix { get; set; }
+
+        [XmlElement("FixToNumber")]
+        public string FixToNumber { get; set; }
+
+        [XmlElement("IsPrefix")]
+        public bool IsPrefix { get; set; }
+
+
+
+        //[XmlElement("NumerateTargetParameter")]
+        //public NumerateTargetParameter NumerateTargetParameter { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        protected void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+    }
+
+    //public class NumerateTargetParameter
+    //{
+    //    [XmlElement("Name")]
+    //    public string Name { get; set; }
+
+    //    [XmlElement("Guid")]
+    //    public string Guid { get; set; }
+    //}
 
     public class ComputeAreaSettings
     {
@@ -352,7 +400,6 @@ namespace ApartmentsProject.Models
         BaseArea
     }
 
-
     public enum LivingArea
     {
         [Description("Площадь округлённая")]
@@ -375,4 +422,25 @@ namespace ApartmentsProject.Models
         NonLiving
     }
 
+    public enum NumberingDirection
+    {
+        [Description("По часовой стрелке")]
+        Сlockwise,
+        [Description("Против часовой стрелки")]
+        Sunwise
+    }
+
+    public enum NumberingStart
+    {
+        [Description("Напротив  подъезда")]
+        EntryPoint,
+        [Description("Верх")]
+        Top,
+        [Description("Право")]
+        Right,
+        [Description("Низ")]
+        Bottom,
+        [Description("Лево")]
+        Left
+    }
 }

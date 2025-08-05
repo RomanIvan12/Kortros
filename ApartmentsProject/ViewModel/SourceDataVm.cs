@@ -1,16 +1,16 @@
-﻿using Autodesk.Revit.DB;
+﻿using ApartmentsProject.AuxiliaryСlasses;
+using ApartmentsProject.Models;
+using ApartmentsProject.ViewModel.Commands;
+using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Architecture;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using ApartmentsProject.Models;
-using ApartmentsProject.AuxiliaryСlasses;
-using System.Collections.Specialized;
-using Autodesk.Revit.DB.Architecture;
-using ApartmentsProject.ViewModel.Commands;
-using System.Text;
 using System.Reflection;
+using System.Windows;
 
 namespace ApartmentsProject.ViewModel
 {
@@ -23,16 +23,16 @@ namespace ApartmentsProject.ViewModel
         public bool IsAddFromRoomsEnabled
         {
             get => _isAddFromRoomsEnabled;
-            set 
-            { 
+            set
+            {
                 _isAddFromRoomsEnabled = value;
                 OnPropertyChanged(nameof(IsAddFromRoomsEnabled));
             }
         }
 
         private ObservableCollection<string> _roomNames;
-        public ObservableCollection<string> RoomNames 
-        { 
+        public ObservableCollection<string> RoomNames
+        {
             get => _roomNames;
             set
             {
@@ -48,8 +48,8 @@ namespace ApartmentsProject.ViewModel
         public string InfoText
         {
             get => _infoText;
-            set 
-            { 
+            set
+            {
                 _infoText = value;
                 OnPropertyChanged(nameof(InfoText));
             }
@@ -59,8 +59,8 @@ namespace ApartmentsProject.ViewModel
         public string IsOk
         {
             get { return _isOk; }
-            set 
-            { 
+            set
+            {
                 _isOk = value;
                 OnPropertyChanged(nameof(IsOk));
             }
@@ -85,7 +85,7 @@ namespace ApartmentsProject.ViewModel
             }
         }
 
-        private static Configuration _selectedConfiguration;
+        private Configuration _selectedConfiguration;
         public Configuration SelectedConfiguration
         {
             get => _selectedConfiguration;
@@ -101,7 +101,7 @@ namespace ApartmentsProject.ViewModel
             }
         }
 
-        private static ObservableCollection<RoomMatrixEntry> _roomMatrixEnties;
+        private ObservableCollection<RoomMatrixEntry> _roomMatrixEnties;
         public ObservableCollection<RoomMatrixEntry> RoomMatrixEnties
         {
             get => _roomMatrixEnties;
@@ -126,7 +126,7 @@ namespace ApartmentsProject.ViewModel
 
                         _roomMatrixEnties.CollectionChanged += OnRoomMatrixEntriesChanged;
                     }
-                    
+
                     OnPropertyChanged(nameof(RoomMatrixEnties));
                     ConfigurationService.Instance.SaveConfiguration(RunCommand.ApartmentsProjectLayout);
                 }
@@ -162,6 +162,8 @@ namespace ApartmentsProject.ViewModel
         public AddRoomMatrixItem AddRoomMatrixItem { get; set; }
         public DeleteRoomMatrixItem DeleteRoomMatrixItem { get; set; }
 
+        private FilteredElementCollector _roomCollector = PluginSettings.Instance.RoomCollector;
+
         public SourceDataVm()
         {
             AddRoomMatrixItem = new AddRoomMatrixItem(this);
@@ -189,23 +191,54 @@ namespace ApartmentsProject.ViewModel
                 .Select(x => x.GetDescription())
                 );
 
-            // ЭТОТ БЛОК НАДО УПРОСТИТЬ
-            var allRooms = new FilteredElementCollector(PluginSettings.Instance.RevitDoc).OfCategory(BuiltInCategory.OST_Rooms)
-                .Where(element => element.LookupParameter(Properties.Resources.ParameterOfGroup)
-                    .AsString() == "Квартира").Cast<Room>().ToList();
+            EventAggregator.Instance.SubscribeAllCorrect(OnAllCorrect);
+            //// ЭТОТ БЛОК НАДО УПРОСТИТЬ
+            CodeToDo();
+            CheckRoomsToAdd();
+        }
+        private void OnAllCorrect(object sender, EventArgs e)
+        {
+            CodeToDo();
+        }
 
-            foreach (var roomName in allRooms.Select(room => room.get_Parameter(BuiltInParameter.ROOM_NAME)
-                .AsString()).Distinct().ToList())
+        private void CodeToDo()
+        {
+            RoomNames.Clear();
+            Guid function = ApartmentParameterMappingVm.MappingModel
+                .First(item => item.DataOrigin.Name == "KRT_Функциональное назначение")
+                .ParameterToMatch.Guid;
+            try
             {
-                RoomNames.Add(roomName);
+                var allRooms = _roomCollector
+                    .Where(element => element.get_Parameter(function)
+                        .AsString() == "Квартира").Cast<Room>().ToList();
+                foreach (var roomName in allRooms.Select(room => room.get_Parameter(BuiltInParameter.ROOM_NAME)
+                    .AsString()).Distinct().ToList())
+                {
+                    RoomNames.Add(roomName);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex.Message);
             }
             CheckRoomsToAdd();
         }
+        private void MappingVm_CorrectValueChanged(object sender, EventArgs e)
+        {
+            var mappingVm = sender as ApartmentParameterMappingVm;
+            if (mappingVm != null)
+            {
+                CodeToDo();
+            }
+        }
+
+
         private void OnRoomMatrixEntriesChanged(object sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.NewItems != null)
                 foreach (RoomMatrixEntry newItem in e.NewItems)
-                    newItem.RoomMatrixEntryChanged += OnRoomMatrixEntryChanged;    
+                    newItem.RoomMatrixEntryChanged += OnRoomMatrixEntryChanged;
             if (e.OldItems != null)
                 foreach (RoomMatrixEntry oldItem in e.OldItems)
                     oldItem.RoomMatrixEntryChanged -= OnRoomMatrixEntryChanged;
@@ -280,7 +313,6 @@ namespace ApartmentsProject.ViewModel
                        {
                            return IsAddFromRoomsEnabled;
                        }
-                       
                        ));
             }
         }
@@ -405,7 +437,6 @@ namespace ApartmentsProject.ViewModel
 
         private void OnRoomMatrixEntryChanged()
         {
-            //RaiseRoomMatrixEntitiesChanged();
             // Сохраняем конфигурацию при изменении элемента
             ConfigurationService.Instance.SaveConfiguration(RunCommand.ApartmentsProjectLayout);
         }

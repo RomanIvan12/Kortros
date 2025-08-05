@@ -1,6 +1,5 @@
 ﻿using Autodesk.Revit.DB;
 using Kortros.Utilities;
-using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,7 +12,6 @@ namespace Kortros.Updaters
 
         public DuctPipeAccessoryUpdater(AddInId id)
         {
-            //_logger.Info($"Duct-Pipe Accessory Updater started: {doc.ActiveView.Name}");
             updaterId = new UpdaterId(id, new Guid("1FD85C92-A351-4796-A67A-5F0488A261BB"));
             RegisterUpdater();
             RegisterTriggers();
@@ -26,7 +24,6 @@ namespace Kortros.Updaters
                 UpdaterRegistry.IsUpdaterRegistered(updaterId);
                 UpdaterRegistry.UnregisterUpdater(updaterId);
             }
-
             UpdaterRegistry.RegisterUpdater(this, true);
         }
 

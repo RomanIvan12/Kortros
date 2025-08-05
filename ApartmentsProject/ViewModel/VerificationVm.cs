@@ -7,15 +7,13 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ApartmentsProject.ViewModel
 {
     public class VerificationVm : INotifyPropertyChanged
     {
-        
-        public FilteredElementCollector RoomCollector;
+
+        private FilteredElementCollector _roomCollector = PluginSettings.Instance.RoomCollector;
         public static ObservableCollection<Room> Rooms { get; set; } = new ObservableCollection<Room>(); // MAIN
 
         public static ObservableCollection<IncorrectRoom> IncorrectRooms { get; set; } = new ObservableCollection<IncorrectRoom>();
@@ -70,8 +68,7 @@ namespace ApartmentsProject.ViewModel
 
             ListOfAllowedNames = SelectedConfiguration.RoomMatrix.Entries
                 .Select(i => i.Name).ToList();
-
-            RoomCollector = new FilteredElementCollector(PluginSettings.Instance.RevitDoc).OfCategory(BuiltInCategory.OST_Rooms);
+            EventAggregator.Instance.SubscribeAllCorrect(OnAllCorrect);
 
             GetRoomsForSelectedParameter();
         }
@@ -80,39 +77,69 @@ namespace ApartmentsProject.ViewModel
         {
             Refresh();
         }
-
+        private void OnAllCorrect(object sender, EventArgs e)
+        {
+            GetRoomsForSelectedParameter();
+        }
 
         // Получаю помещения с заполненным значением "Квартира" в прописанном в ресурсах имени параметра
         private void GetRoomsForSelectedParameter()
         {
             Rooms.Clear();
-            var allRooms = RoomCollector.Where(element => element.LookupParameter(Properties.Resources.ParameterOfGroup)
-                    .AsString() == "Квартира")
-                .Cast<Room>().ToList();
-            foreach (var room in allRooms)
+            try
             {
-                Rooms.Add(room);
+                Guid function = ApartmentParameterMappingVm.MappingModel
+                    .First(item => item.DataOrigin.Name == "KRT_Функциональное назначение")
+                    .ParameterToMatch.Guid;
+                var allRooms = _roomCollector.Where(element => element.get_Parameter(function).AsString() == "Квартира")
+                    .Cast<Room>().ToList();
+
+                foreach (var room in allRooms)
+                {
+                    Rooms.Add(room);
+                }
+            }
+            catch (Exception ex)
+            {
+                Logger.Log.Error(ex.Message);
             }
             IncorrectRooms.Clear();
             GetUnplacedRooms();
             GetUnboundRooms();
             GetMultipleRooms();
             FindIncorrectNamesRooms();
+            DoesRoomHasBoundaries();
         }
 
         private void Refresh()
         {
             ListOfAllowedNames.Clear();
-            ListOfAllowedNames = SelectedConfiguration.RoomMatrix.Entries
-                .Select(i => i.Name).ToList();
-
+            //ListOfAllowedNames = SelectedConfiguration.RoomMatrix.Entries
+            //    .Select(i => i.Name).ToList();
+            if (SelectedConfiguration != null &&
+                SelectedConfiguration.RoomMatrix != null &&
+                SelectedConfiguration.RoomMatrix.Entries != null)
+            {
+                var entries = SelectedConfiguration.RoomMatrix.Entries;
+                if (entries.Any())
+                {
+                    ListOfAllowedNames = entries
+                        .Where(i => i != null && i.Name != null)
+                        .Select(i => i.Name)
+                        .ToList();
+                }
+                else
+                {
+                    ListOfAllowedNames = new List<string>();
+                }
+            }
             IncorrectRooms.Clear();
             GetUnplacedRooms();
             GetUnboundRooms();
             GetMultipleRooms();
             FindIncorrectNamesRooms();
+            DoesRoomHasBoundaries();
         }
-
 
         // 1st:
         private void GetUnplacedRooms()
@@ -128,7 +155,6 @@ namespace ApartmentsProject.ViewModel
                     };
                     IncorrectRooms.Add(newIncorrectRoom);
                 }
-
             }
         }
 
@@ -149,7 +175,6 @@ namespace ApartmentsProject.ViewModel
                         }
                     }
                 }
-
                 if (room.Location != null && room.Area == 0 && isSolidEmpty == true)
                 {
                     var newIncorrectRoom = new IncorrectRoom(room)
@@ -162,7 +187,7 @@ namespace ApartmentsProject.ViewModel
             }
         }
 
-        // 2d: Помещение размещено, но его не окружают стены - Error
+        // 3d: 
         private void GetMultipleRooms()
         {
             foreach (var room in Rooms)
@@ -179,7 +204,6 @@ namespace ApartmentsProject.ViewModel
                         }
                     }
                 }
-
                 if (room.Location != null && room.Area == 0 && isSolidEmpty == false)
                 {
                     var newIncorrectRoom = new IncorrectRoom(room)
@@ -209,18 +233,49 @@ namespace ApartmentsProject.ViewModel
             }
         }
 
+        private void DoesRoomHasBoundaries()
+        {
+            foreach (var room in Rooms)
+            {
+                IList<IList<BoundarySegment>> boundaries = room.GetBoundarySegments(new SpatialElementBoundaryOptions());
+                if (boundaries == null || boundaries.Count == 0)
+                {
+                    var newIncorrectRoom = new IncorrectRoom(room)
+                    {
+                        ErrorMsg = "Ошибка с границами",
+                        ErrorStatus = "Error"
+                    };
+                    IncorrectRooms.Add(newIncorrectRoom);
+                }
+            }
+        }
 
         private void OnSelectedConfigurationChanged(Configuration newConfiguration)
         {
             // Обновляем локальное свойство при изменении
             SelectedConfiguration = newConfiguration;
-            ListOfAllowedNames = SelectedConfiguration.RoomMatrix.Entries
-                .Select(i => i.Name).ToList();
+            //ListOfAllowedNames = SelectedConfiguration.RoomMatrix.Entries
+            //    .Select(i => i.Name).ToList();
+            if (SelectedConfiguration != null &&
+                SelectedConfiguration.RoomMatrix != null &&
+                SelectedConfiguration.RoomMatrix.Entries != null)
+            {
+                var entries = SelectedConfiguration.RoomMatrix.Entries;
+                if (entries.Any())
+                {
+                    ListOfAllowedNames = entries
+                        .Where(i => i != null && i.Name != null)
+                        .Select(i => i.Name)
+                        .ToList();
+                }
+                else
+                {
+                    ListOfAllowedNames = new List<string>();
+                }
+            }
         }
 
-
         public event PropertyChangedEventHandler PropertyChanged;
-
         protected virtual void OnPropertyChanged(string propertyName)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
@@ -244,11 +299,9 @@ namespace ApartmentsProject.ViewModel
             LevelName = room.Level.Name;
         }
     }
+}
     /// Относится к помещениям с заполненным значением "Квартира"
     /// 1. Помещение не размещено - Warning
     /// 2. Помещение размещено, но его не окружают стены - Error
     /// 3. Несколько помещений в одном контуре - Error
     /// 4. Имя помещения нет в матрице помещений
-    /// 
-    
-}

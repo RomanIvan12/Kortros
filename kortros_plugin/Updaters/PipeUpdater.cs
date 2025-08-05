@@ -1,7 +1,6 @@
 ﻿using Autodesk.Revit.DB;
 using Autodesk.Revit.DB.Plumbing;
 using Kortros.Utilities;
-using log4net;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -14,7 +13,6 @@ namespace Kortros.Updaters
 
         public PipeUpdater(AddInId id)
         {
-            //_logger.Info($"PipeUpdater started: {doc.ActiveView.Name}");
             updaterId = new UpdaterId(id, new Guid("2D89A647-55E2-4570-AFC7-563A957784C0"));
             RegisterUpdater();
             RegisterTriggers();
@@ -72,16 +70,6 @@ namespace Kortros.Updaters
                 {
                     if (doc.IsWorkshared)
                     {
-                        // Обновление рабочего набора для ОВ
-                        //try
-                        //{
-                        //    UtilFunctions.CommentBasedPipeWorkset(doc, element);
-                        //}
-                        //catch (Exception ex)
-                        //{
-                        //    _logger.Error($"ElementID {elementId.IntegerValue} Workset error: {ex.Message}");
-                        //}
-
                         // Обновление рабочего набора для ВК
                         try
                         {
@@ -131,7 +119,6 @@ namespace Kortros.Updaters
                 }
             }
         }
-
         public string GetAdditionalInformation()
         {
             return "Pipe Updater Additional Information";

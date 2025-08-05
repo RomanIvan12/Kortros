@@ -1,8 +1,6 @@
 ﻿using Autodesk.Revit.DB;
-using log4net;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Kortros.Utilities;
 
 namespace Kortros.Updaters
@@ -45,9 +43,7 @@ namespace Kortros.Updaters
         public void Execute(UpdaterData data)
         {
             Document doc = data.GetDocument();
-
             Guid KRTRS_Izm = new Guid("7621a737-0095-43fe-93fd-ee4a267a6cab");
-
             ICollection<ElementId> addedCollection = data.GetAddedElementIds(); //новые
 
             // Изменение рабочего набора в р-н с названием, содержащим название категории
@@ -132,7 +128,6 @@ namespace Kortros.Updaters
                 }
             }
         }
-
         public string GetAdditionalInformation()
         {
             return "Family Instance Class Updater Additional Information";

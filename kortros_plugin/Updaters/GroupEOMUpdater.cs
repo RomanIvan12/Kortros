@@ -1,5 +1,4 @@
 ﻿using Autodesk.Revit.DB;
-using log4net;
 using System;
 using System.Collections.Generic;
 using Kortros.Utilities;
@@ -22,7 +21,6 @@ namespace Kortros.Updaters
                 UpdaterRegistry.IsUpdaterRegistered(updaterId);
                 UpdaterRegistry.UnregisterUpdater(updaterId);
             }
-
             UpdaterRegistry.RegisterUpdater(this, true);
         }
 
@@ -118,7 +116,6 @@ namespace Kortros.Updaters
                 }
             }
         }
-
         public string GetAdditionalInformation()
         {
             return "EOMGroup Updater Additional Information";

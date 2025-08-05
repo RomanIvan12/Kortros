@@ -8,9 +8,6 @@ using System.Windows.Controls;
 
 namespace Kortros.ManageTab.Commands
 {
-    /// <summary>
-    /// Логика взаимодействия для WorksetCreationWindow.xaml
-    /// </summary>
     public partial class WorksetCreationWindow : Window
     {
         Document _doc;

@@ -5,8 +5,6 @@ using Autodesk.Revit.DB;
 using System.Windows;
 using DataFromNavisView.Commands;
 using DataFromNavisView.Helpers;
-using System.Collections.Generic;
-using System.Windows.Media.Media3D;
 
 
 namespace DataFromNavisView
