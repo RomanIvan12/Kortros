@@ -12,7 +12,6 @@ namespace ApartmentsProject.ViewModel
 {
     public class VerificationVm : INotifyPropertyChanged
     {
-
         private FilteredElementCollector _roomCollector = PluginSettings.Instance.RoomCollector;
         public static ObservableCollection<Room> Rooms { get; set; } = new ObservableCollection<Room>(); // MAIN
 

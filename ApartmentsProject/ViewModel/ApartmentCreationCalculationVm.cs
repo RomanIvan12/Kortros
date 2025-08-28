@@ -359,7 +359,7 @@ namespace ApartmentsProject.ViewModel
                     foreach (var model in ApartmentParameterMappingVm.MappingModel)
                     {
                         // if (model.DataOrigin.Name == "KRT_Функциональное назначение")
-                        if (model.DataOrigin.Name == "ПО_Функц. назначение")
+                        if (model.DataOrigin.Name == "ПО_Функц. назначение" || model.DataOrigin.Name == "KRT_Функциональное назначение")
                             continue;
 
                         var guid = model.ParameterToMatch.Guid;

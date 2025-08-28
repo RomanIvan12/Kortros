@@ -41,14 +41,7 @@ namespace RsnModelReloader
             IList<WorksetPreview> worksets = WorksharingUtils.GetUserWorksetInfo(modelPath);
             List<WorksetId> wsToOpen = new List<WorksetId>();
             WorksetConfiguration worksetConfiguration = new WorksetConfiguration(WorksetConfigurationOption.CloseAllWorksets);
-            //foreach (WorksetPreview workset in worksets)
-            //{
-            //    if (workset.Name.IndexOf("Общие уровни", StringComparison.OrdinalIgnoreCase) == -1 ||
-            //        workset.Name.IndexOf("Shared Levels", StringComparison.OrdinalIgnoreCase) == -1)
-            //    {
-            //        wsToOpen.Add(workset.Id);
-            //    }
-            //}
+
             worksetConfiguration.Open(wsToOpen);
             options.SetOpenWorksetsConfiguration(worksetConfiguration);
             Document doc = app.OpenDocumentFile(modelPath, options);

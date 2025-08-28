@@ -22,6 +22,7 @@ namespace ExporterFromRs
     {
         // JSONConverter converter = new JSONConverter("F:\\18. BIM\\BIM_DATA\\05_Ресурсы\\01_Настройки плагинов\\ModelsExporter"); // создать JSON. СЮДА ПУТЬ СОХРАНЕНИЯ ФАЙЛА JSON в скобках
         private const string JsonConfigPath = @"F:\18. BIM\BIM_DATA\05_Ресурсы\01_Настройки плагинов\ModelsExporter";
+        private const string JsonConfigPathCommon = @"\\FPS03MSK.corp.rsg.grp\Common$\18. BIM\BIM_DATA\05_Ресурсы\01_Настройки плагинов\ModelsExporter";
         private Application _app;
         private readonly Dictionary<Model, string> _selectedDictionary;
         private readonly string _projectName;
@@ -39,7 +40,7 @@ namespace ExporterFromRs
             _convertIsChecked = convertIsChecked;
             _rebarIsChecked = rebarIsChecked;
 
-            _converter = new JSONConverter(JsonConfigPath);
+            _converter = new JSONConverter(JsonConfigPathCommon);
 
             ProcessFiles();
         }
@@ -209,6 +210,7 @@ namespace ExporterFromRs
             doc.Export(folderPath,
                 fileName,
                 options);
+            Logger.Log.Info($"{doc.Title} NWC был создан");
         }
 
         private void SaveOpenedFile(Document doc, string folderPath)
@@ -290,13 +292,18 @@ namespace ExporterFromRs
                 if (view.ViewTemplateId.IntegerValue == -1)
                 {
                     OverrideGraphicSettings overrideSettings = new OverrideGraphicSettings();
+                    foreach (var category in categories)
+                    {
+                        // Получение настроек графики для вида
+                        view.SetCategoryHidden(category.Id, true);
+                    }
                     HideCategoriesInView(view, categories);
                 }
                 else
                 {
                     OverrideGraphicSettings overrideSettings = new OverrideGraphicSettings();
                     View3D template = doc.GetElement(view.ViewTemplateId) as View3D;
-                    HideCategoriesInView(view, categories);
+                    HideCategoriesInView(template, categories);
                 }
                 tr.Commit();
             }

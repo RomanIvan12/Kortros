@@ -31,7 +31,7 @@ namespace DataFromNavisView
                     LongDescription = "Выгрузка данных из всех связей в базу данных PostgreSql" +
                                       "\n- Выгрузка выходит ТОЛЬКО с вида Navisworks" +
                                       "\n- Если такой вид отсутствует, выгрузки для этой связи не будет",
-                    LargeImage = IcoImageSource("DataFromNavisView.ExportButtonLogo.ico")
+                    LargeImage = IcoImageSource("DataFromNavisView.Resources.ExportButtonLogo.ico")
                 };
                 PushButton _ = panelArch.AddItem(btnApt) as PushButton;
             }

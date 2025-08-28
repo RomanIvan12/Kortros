@@ -1,22 +1,21 @@
-﻿using System;
+﻿using Autodesk.Revit.DB;
+using Autodesk.Revit.DB.Architecture;
+using DataFromNavisView.Helpers;
+using Newtonsoft.Json;
+using Npgsql;
+using NpgsqlTypes;
+using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Windows;
-using Autodesk.Revit.DB;
-using Npgsql;
+using System.Windows.Controls;
 using Document = Autodesk.Revit.DB.Document;
-using DataFromNavisView.Helpers;
-using System.Diagnostics;
-using Autodesk.Revit.DB.Architecture;
-using NpgsqlTypes;
-using Newtonsoft.Json;
 
 namespace DataFromNavisView
 {
-    /// <summary>
-    /// Логика взаимодействия для LocalWindow.xaml
-    /// </summary>
     public partial class LocalWindow : Window
     {
         private readonly string _host = "localhost";
@@ -74,6 +73,7 @@ namespace DataFromNavisView
                     Logger.Log.Error("Connection error: " + ex.Message);
                     MessageBox.Show("Connection error: " + ex.Message);
                 }
+                EnsureExportTableExists(conn);
             }
         }
         
@@ -166,6 +166,7 @@ namespace DataFromNavisView
                 Console.WriteLine($"Найден project_id = {projectId} для проекта '{projectName}'");
             }
 
+
             // Вставляем новую запись в таблицу exports
             string insertExportQuery = "INSERT INTO exports (project_id, export_date) VALUES (@projectId, @exportDate) RETURNING export_id;";
             using (var insertCommand = new NpgsqlCommand(insertExportQuery, connection))
@@ -178,12 +179,49 @@ namespace DataFromNavisView
                 return exportId;
             }
         }
+
+        public void EnsureExportTableExists(NpgsqlConnection connection)
+        {
+            var connectionString = $"Host={_host};Port={_port};Username={_user};Password={PassName.Password};Database={_database}";
+
+            // Проверяем, есть ли таблица export
+            string checkTableQuery = $@"
+                SELECT EXISTS (
+                    SELECT 1
+                    FROM information_schema.tables
+                    WHERE table_schema = 'public'
+                        AND table_name = 'exports'
+                );";
+            bool tableExists;
+            using (var checkCmd = new NpgsqlCommand(checkTableQuery, connection))
+            {
+                tableExists = (bool)checkCmd.ExecuteScalar();
+            }
+            if (!tableExists)
+            {
+                // Create Table
+                string createTableQuery = $@"
+                    CREATE TABLE public.exports (
+                    export_id SERIAL PRIMARY KEY,
+                    project_id INTEGER,
+                    export_date DATE NOT NULL
+                );";
+                using (var cmd = new NpgsqlCommand(createTableQuery, connection))
+                {
+                    cmd.ExecuteNonQuery();
+                    Logger.Log.Info($"Создана таблица exports");
+                }
+            }
+        }
+
+
         public static void CreateSubProjectDataTable(NpgsqlConnection connection)
         {
             string query = $@"
             CREATE TABLE IF NOT EXISTS Element_params (
                 id BIGSERIAL PRIMARY KEY,
                 export_id INTEGER REFERENCES exports(export_id),
+                element_type VARCHAR(255),
                 file_name VARCHAR(255),
                 element_id INTEGER,
                 parameter_name VARCHAR(255),
@@ -201,71 +239,109 @@ namespace DataFromNavisView
         public static List<ParameterDataTemp> GetDataFromLink(Document doc, View view, string fileName)
         {
             List<ParameterDataTemp> data = new List<ParameterDataTemp>();
+            HashSet<int> processedTypeIds = new HashSet<int>();
 
             var linkedFileElementsNav = new FilteredElementCollector(doc, view.Id)
-                .WhereElementIsNotElementType()
                 .ToElements()
                 .Where(x => x.Category != null);
+                //.WhereElementIsNotElementType()
 
             foreach (Element element in linkedFileElementsNav)
             {
-                if (element.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Cameras)
+                if (element.Category.Id.IntegerValue == (int)BuiltInCategory.OST_Cameras || // Убрал камеры, Группы моделей
+                        element.Category.Id.IntegerValue == (int)BuiltInCategory.OST_IOSModelGroups)
                     continue;
 
-                ParameterSet parameterSet = element.Parameters;
-                foreach (Parameter parameter in parameterSet)
+
+                if (element.GetTypeId().IntegerValue != -1)
                 {
-                    if (parameter.Id.IntegerValue == (int)BuiltInParameter.ELEM_CATEGORY_PARAM_MT)
-                        continue;
-                    var boolValue = (parameter.Definition as InternalDefinition).BuiltInParameter == BuiltInParameter.INVALID
-                        ? false
-                        : true;
-                    ParameterDataTemp dataRaw = new ParameterDataTemp()
-                    {
-                        FileName = fileName,
-                        ElementId = element.Id.IntegerValue,
-                        ParameterName = parameter.Definition.Name,
-                        IsBuiltIn = boolValue
-                    };
-
-                    switch (parameter.StorageType)
-                    {
-                        case StorageType.String:
-                            dataRaw.ParameterValue = string.IsNullOrEmpty(parameter.AsString())
-                                ? null
-                                : parameter.AsString();
-                            break;
-
-                        case StorageType.Double:
-                            var rounding = UtilityFunctions.GetParameterAccuracy(doc, parameter);
-                            int decimalPlaces = (int)Math.Abs(Math.Log10(rounding));
-                            dataRaw.ParameterValue =
-                                Math.Round(
-                                    UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(),
-                                        parameter.GetUnitTypeId()), decimalPlaces);
-                            break;
-
-                        case StorageType.ElementId:
-                            dataRaw.ParameterValue = parameter.AsValueString();
-                            break;
-
-                        case StorageType.Integer:
-                            dataRaw.ParameterValue = parameter.AsInteger();
-                            break;
-                        default:
-                            dataRaw.ParameterValue = null;
-                            break;
-                    }
-                    data.Add(dataRaw);
+                    var dataItemsForElement = CreateParamData(doc, element, fileName, processedTypeIds);
+                    data.AddRange(dataItemsForElement);
                 }
             }
             return data;
         }
+
+        private static List<ParameterDataTemp> CreateParamData(Document doc, Element element, string fileName, HashSet<int>processedTypeIds)
+        {
+            List<ParameterDataTemp> result = new List<ParameterDataTemp>();
+
+            foreach (Parameter parameter in element.Parameters)
+            {
+                if (parameter.Id.IntegerValue == (int)BuiltInParameter.ELEM_CATEGORY_PARAM_MT)
+                    continue;
+
+                ParameterDataTemp dataRaw = new ParameterDataTemp()
+                {
+                    FileName = fileName,
+                    ElementId = element.Id.IntegerValue,
+                    SymbolOrType = "Экземпляр",
+                    ParameterName = parameter.Definition.Name,
+                    ParameterValue = GetParameterValue(doc, parameter),
+                    IsBuiltIn = (parameter.Definition as InternalDefinition)?.BuiltInParameter == BuiltInParameter.INVALID
+                };
+                result.Add(dataRaw);
+            }
+
+            ElementId typeId = element.GetTypeId();
+            int typeIdint = element.GetTypeId().IntegerValue;
+            if (typeId != ElementId.InvalidElementId && !processedTypeIds.Contains(typeIdint))
+            {
+                processedTypeIds.Add(typeIdint);
+                var elementType = doc.GetElement(typeId);
+
+                foreach (Parameter parameter in elementType.Parameters)
+                {
+                    if (parameter.Id.IntegerValue == (int)BuiltInParameter.ELEM_CATEGORY_PARAM_MT)
+                        continue;
+
+                    ParameterDataTemp dataRaw = new ParameterDataTemp()
+                    {
+                        FileName = fileName,
+                        ElementId = elementType.Id.IntegerValue,
+                        SymbolOrType = "Тип",
+                        ParameterName = parameter.Definition.Name,
+                        ParameterValue = GetParameterValue(doc, parameter),
+                        IsBuiltIn = (parameter.Definition as InternalDefinition)?.BuiltInParameter == BuiltInParameter.INVALID
+                    };
+                    result.Add(dataRaw);
+                }
+            }
+            return result;
+        }
+
+        private static object GetParameterValue(Document doc, Parameter parameter)
+        {
+            switch (parameter.StorageType)
+            {
+                case StorageType.String:
+                    return string.IsNullOrEmpty(parameter.AsString())
+                        ? null
+                        : parameter.AsString();
+                case StorageType.Double:
+                    var rounding = UtilityFunctions.GetParameterAccuracy(doc, parameter);
+                    int decimalPlaces = (int)Math.Abs(Math.Log10(rounding));
+                    return
+                        Math.Round(
+                            UnitUtils.ConvertFromInternalUnits(parameter.AsDouble(),
+                                parameter.GetUnitTypeId()), decimalPlaces);
+                case StorageType.ElementId:
+                    return parameter.AsValueString();
+
+                case StorageType.Integer:
+                    return parameter.AsInteger();
+
+                default:
+                    return null;
+            }
+        }
+
+
         public static void InsertDataIntoSubprojectTable(NpgsqlConnection connection, int exportId, List<ParameterDataTemp>dataElements)
         {
             string query = $@"
-            INSERT INTO Element_params (export_id, file_name, element_id, parameter_name, parameter_value, is_built_in) 
-            VALUES (@exportId, @fileName, @elementId, @parameterName, @parameterValue, @isBuiltIn);";
+            INSERT INTO Element_params (export_id, file_name, element_id, element_type, parameter_name, parameter_value, is_built_in) 
+            VALUES (@exportId, @fileName, @elementId, @elementType, @parameterName, @parameterValue, @isBuiltIn);";
 
             using (var transaction = connection.BeginTransaction())
             {
@@ -274,6 +350,7 @@ namespace DataFromNavisView
                     cmd.Parameters.Add(new NpgsqlParameter("exportId", NpgsqlDbType.Integer));
                     cmd.Parameters.Add(new NpgsqlParameter("fileName", NpgsqlDbType.Varchar));
                     cmd.Parameters.Add(new NpgsqlParameter("elementId", NpgsqlDbType.Integer));
+                    cmd.Parameters.Add(new NpgsqlParameter("elementType", NpgsqlDbType.Varchar));
                     cmd.Parameters.Add(new NpgsqlParameter("parameterName", NpgsqlDbType.Varchar));
                     cmd.Parameters.Add(new NpgsqlParameter("parameterValue", NpgsqlDbType.Varchar));
                     cmd.Parameters.Add(new NpgsqlParameter("isBuiltIn", NpgsqlDbType.Boolean));
@@ -284,6 +361,7 @@ namespace DataFromNavisView
                         cmd.Parameters["exportId"].Value = exportId;
                         cmd.Parameters["fileName"].Value = data.FileName;
                         cmd.Parameters["elementId"].Value = data.ElementId;
+                        cmd.Parameters["elementType"].Value = data.SymbolOrType;
                         cmd.Parameters["parameterName"].Value = data.ParameterName;
                         cmd.Parameters["isBuiltIn"].Value = data.IsBuiltIn;
 
@@ -845,6 +923,7 @@ namespace DataFromNavisView
     {
         public string FileName { get; set; }
         public int ElementId { get; set; }
+        public string SymbolOrType { get; set; }
         public string ParameterName { get; set; }
         public object ParameterValue { get; set; }
         public bool IsBuiltIn { get; set; }

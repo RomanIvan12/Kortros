@@ -1,4 +1,4 @@
-﻿<Window x:Class="ApartmentsProject.View.MainWindow"
+﻿<mah:MetroWindow x:Class="ApartmentsProject.View.MainWindow"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
@@ -8,18 +8,23 @@
              xmlns:m="clr-namespace:ApartmentsProject.Models"
              xmlns:uc="clr-namespace:ApartmentsProject.View.Controls"
              xmlns:cv="clr-namespace:ApartmentsProject.ViewModel.Utilities.Converters"
+             xmlns:mah="clr-namespace:MahApps.Metro.Controls;assembly=MahApps.Metro"
              mc:Ignorable="d" 
              Height="1000" Width="900" MinWidth="600" MinHeight="600"
-             WindowStartupLocation="CenterScreen">
+             WindowStartupLocation="CenterScreen"
+             Title="Main Window"
+             ResizeMode="CanResize">
     <Window.Resources>
         <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/ApartmentsProject;component/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
             <vm:ConfigurationSettingsVm x:Key="Vm_Settings"/>
             <vm:ApartmentParameterMappingVm x:Key="vm_mapping"/>
             <vm:SourceDataVm x:Key="Vm_SourceData"/>
             <vm:VerificationVm x:Key="Vm_verification"/>
             <vm:NumberingVm x:Key="Vm_Numbering"/>
             <vm:ApartmentCreationCalculationVm x:Key="Vm_CreationCalculation"/>
-            
             <cv:ListToStringConverter x:Key="ListToStringConverter"/>
             <cv:BoolToIconConverter x:Key="BoolToIconConverter"/>
             <cv:RoomTypeConverter x:Key="RoomTypeConverter"/>
@@ -28,7 +33,9 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid DataContext="{StaticResource vm_mapping}">
-        <TabControl TabStripPlacement="Left">
+        <TabControl TabStripPlacement="Left"
+                    BorderBrush="{DynamicResource MahApps.Brushes.Accent4}"
+                    BorderThickness="1,0,0,0" >
             <TabItem Header="Настройка">
                 <Grid DataContext="{StaticResource Vm_Settings}">
                     <Grid.RowDefinitions>
@@ -42,49 +49,44 @@
                         <RowDefinition Height="auto"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" HorizontalAlignment="Center" VerticalAlignment="Center"
-                               FontSize="16" FontWeight="Bold"
-                               Text="ИНФОРМАЦИОННОЕ ОКНО"/>
+                    <TextBlock Grid.Row="0" Style="{StaticResource HeaderTextStyle}" Text="ИНФОРМАЦИОННОЕ ОКНО"/>
                     <Grid Row="1">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="150"/>
+                            <ColumnDefinition Width="200"/>
                             <ColumnDefinition Width="*" MinWidth="200"/>
                             <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="50"/>
                             <ColumnDefinition Width="50"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Margin="10,0"
-                                   VerticalAlignment="Center"
+                        <TextBlock Grid.Column="0" Style="{StaticResource LabelTextStyle}"
                                    Text="Текущая конфигурация"/>
-                        <ComboBox Grid.Column="1" Margin="10, 10, 100, 10" VerticalContentAlignment="Center"
+                        <ComboBox Grid.Column="1" Margin="10, 10, 100, 10"
                                   ItemsSource="{Binding Configurations, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   DisplayMemberPath="Name" 
                                   SelectedItem="{Binding SelectedConfiguration, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Button Grid.Column="2" Margin="10" Command="{Binding AddConfig}">
-                            <Image Source="pack://application:,,,/ApartmentsProject;component/Icons/Config_plus.ico" Margin="3"/>
+                        <Button Grid.Column="2" Margin="5" Command="{Binding AddConfig}" Style="{StaticResource CircleButtonStyle}">
+                            <Image Source="pack://application:,,,/ApartmentsProject;component/Icons/Config_plus.ico" Margin="7"/>
                         </Button>
-                        <Button Grid.Column="3" Margin="10" Command="{Binding DeleteConfig}"
+                        <Button Grid.Column="3" Margin="5" Command="{Binding DeleteConfig}" Style="{StaticResource CircleButtonStyle}"
                                 CommandParameter="{Binding Configurations}">
-                            <Image Source="pack://application:,,,/ApartmentsProject;component/Icons/Config_delete.ico" Margin="3"/>
+                            <Image Source="pack://application:,,,/ApartmentsProject;component/Icons/Config_delete.ico" Margin="7"/>
                         </Button>
-                        <Button Grid.Column="4" Margin="10" Command="{Binding RenameConfig}">
-                            <Image Source="pack://application:,,,/ApartmentsProject;component/Icons/Config_rename.ico" Margin="3"/>
+                        <Button Grid.Column="4" Margin="5" Command="{Binding RenameConfig}" Style="{StaticResource CircleButtonStyle}">
+                            <Image Source="pack://application:,,,/ApartmentsProject;component/Icons/Config_rename.ico" Margin="7"/>
                         </Button>
                     </Grid>
                     <Border Grid.Row="2" BorderBrush="Gray" BorderThickness="0,2,0,5"/>
-                    <TextBlock Grid.Row="3" HorizontalAlignment="Center" VerticalAlignment="Center"
-                               FontSize="14" FontWeight="Bold" Text="Установленные настройки конфигурации"/>
+                    <TextBlock Grid.Row="3" Style="{StaticResource SubHeaderTextStyle}"
+                               Text="Установленные настройки конфигурации"/>
                     <Grid Row="4">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="200"/>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="50"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Margin="10,0"
-                                   VerticalAlignment="Center"
+                        <TextBlock Grid.Column="0" Style="{StaticResource LabelTextStyle}"
                                    Text="Идентификатор квартир"/>
-                        <TextBox Grid.Column="1" Margin="10" Width="200" HorizontalAlignment="Left"
-                                 VerticalContentAlignment="Center"
+                        <TextBox Grid.Column="1" Margin="10" Width="200" HorizontalAlignment="Left" mah:TextBoxHelper.Watermark="Например, `Квартира`"
                                  Text="{Binding ValueFunc, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                         <Rectangle Grid.Column="2" Width="40" Height="40" Fill="LightBlue">
                             <Rectangle.ToolTip>
@@ -94,18 +96,16 @@
                             </Rectangle.ToolTip>
                         </Rectangle>
                     </Grid>
-                    <TextBlock Grid.Row="5" Margin="10,0,0,15"
-                               VerticalAlignment="Center" HorizontalAlignment="Left"
-                               Text="Указывается значение параметра Функциональное назначение, присвоенное помещениям квартир"/>
+                    <TextBlock Grid.Row="5" Margin="10,0,0,15" FontSize="10" VerticalAlignment="Center" HorizontalAlignment="Center"
+                               Text="Указывается значение параметра `Функциональное назначение`, присвоенное помещениям квартир"/>
                     <Grid Row="6">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="300"/>
                         </Grid.ColumnDefinitions>
-                        <TextBlock Grid.Column="0" Margin="10,0"
-                                   VerticalAlignment="Center" TextWrapping="Wrap" TextTrimming="None"
+                        <TextBlock Grid.Column="0" Style="{StaticResource LabelTextStyle}"
                                    Text="Вариант предварительной очистки параметров помещений перед сборкой квартир"/>
-                        <ComboBox Grid.Column="1" Margin="10" VerticalContentAlignment="Center"
+                        <ComboBox Grid.Column="1" Margin="10"
                                   ItemsSource="{Binding ClearCommonParametersBeforeCalculationOptions}"
                                   SelectedItem="{Binding SelectedClearCommonParametersBeforeCalculation, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                   />
@@ -113,10 +113,10 @@
                     <GroupBox Grid.Row="7" Header="Вычисляемые значения" Margin="10">
                         <Grid VerticalAlignment="Top">
                             <Grid.RowDefinitions>
-                                <RowDefinition Height="50"/>
-                                <RowDefinition Height="50"/>
-                                <RowDefinition Height="50"/>
-                                <RowDefinition Height="50"/>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="40"/>
+                                <RowDefinition Height="40"/>
                             </Grid.RowDefinitions>
 
                             <Grid Row="0">
@@ -124,10 +124,9 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="330"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Margin="10,0"
-                                           VerticalAlignment="Center" TextWrapping="Wrap" TextTrimming="None"
+                                <TextBlock Grid.Column="0" Style="{StaticResource LabelTextStyle}"
                                            Text="Округление площадей: "/>
-                                <ComboBox Grid.Column="1" Margin="10" VerticalContentAlignment="Center"
+                                <ComboBox Grid.Column="1" Margin="5"
                                           ItemsSource="{Binding AreaRoundTypeOptions}"
                                           SelectedItem="{Binding SelectedAreaRoundType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             </Grid>
@@ -136,79 +135,61 @@
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="330"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Margin="10,0"
-                                           VerticalAlignment="Center" TextWrapping="Wrap" TextTrimming="None"
+                                <TextBlock Grid.Column="0" Style="{StaticResource LabelTextStyle}"
                                            Text="При расчёте с коэффициентом использовать: "/>
-                                <ComboBox Grid.Column="1" Margin="10" VerticalContentAlignment="Center"
+                                <ComboBox Grid.Column="1" Margin="5"
                                           ItemsSource="{Binding SourceAreaForFactorOptions}"
-                                          SelectedItem="{Binding SelectedSourceAreaForFactor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                          />
+                                          SelectedItem="{Binding SelectedSourceAreaForFactor, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             </Grid>
                             <Grid Row="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="330"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Margin="10,0"
-                                           VerticalAlignment="Center" TextWrapping="Wrap" TextTrimming="None"
+                                <TextBlock Grid.Column="0" Style="{StaticResource LabelTextStyle}"
                                            Text="Площадь жилая: "/>
-                                <ComboBox Grid.Column="1" Margin="10" VerticalContentAlignment="Center"
+                                <ComboBox Grid.Column="1" Margin="5"
                                           ItemsSource="{Binding ComputeLivingAreaOptions}"
-                                          SelectedItem="{Binding SelectedLivingArea, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                          />
+                                          SelectedItem="{Binding SelectedLivingArea, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                             </Grid>
                             <Grid Row="3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
                                     <ColumnDefinition Width="330"/>
                                 </Grid.ColumnDefinitions>
-                                <TextBlock Grid.Column="0" Margin="10,0"
-                                           VerticalAlignment="Center" TextWrapping="Wrap" TextTrimming="None"
+                                <TextBlock Grid.Column="0" Style="{StaticResource LabelTextStyle}"
                                            Text="Площадь квартиры: "/>
-                                <ComboBox Grid.Column="1" Margin="10" VerticalContentAlignment="Center"
+                                <ComboBox Grid.Column="1" Margin="5"
                                           ItemsSource="{Binding ComputeFlatAreaOptions}"
-                                          SelectedItem="{Binding SelectedFlatArea, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                          />
+                                          SelectedItem="{Binding SelectedFlatArea, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             </Grid>
                         </Grid>
                     </GroupBox>
-
-                    <TextBlock Grid.Row="8" HorizontalAlignment="Left" VerticalAlignment="Center"
-                               FontSize="12"
-                               Text="{Binding LabelValue, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Параметры">
                 <Grid DataContext="{StaticResource vm_mapping}">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="90"/>
-                        <RowDefinition Height="*"/>
+                        <RowDefinition Height="90" MinHeight="50" MaxHeight="300"/>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="*" MinHeight="50"/>
                         <RowDefinition Height="50"/>
                     </Grid.RowDefinitions>
-                    <Border Grid.Row="0"
-                            Background="#FFD4D4D4" 
-                            CornerRadius="5" 
-                            Margin="5" 
-                            VerticalAlignment="Stretch"/>
-                    <TextBlock Grid.Row="0" FontSize="12" FontWeight="Light" TextWrapping="Wrap" TextTrimming="None"
-                               Margin="10"
-                               Text=" Инструкция&#10; Все помещения в проекте должны иметь общие параметры,
+                    <GroupBox Grid.Row="0" Header="Инструкция" Style="{StaticResource InstructionGroupBoxStyle}">
+                        <TextBlock Style="{StaticResource InstructionTextStyle}"
+                                   Text="Все помещения в проекте должны иметь общие параметры,
 указанные в данном списке. Вы можете использовать собственные общие параметры того же типа (указан в квадратных скобках).
 Выберите собственные общие параметры или нажмите кнопку Создать отсутствующие параметры.
 Числовые параметры представлены типом Денежная единица для того, чтобы обрабатывать помещения в группах"/>
+                    </GroupBox>
+                    <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" 
+                                  Background="LightGray" ShowsPreview="True" ResizeDirection="Rows"/>
                     <DataGrid ItemsSource="{Binding MappingModel, Mode = TwoWay}"
                               SelectedItem="{Binding SelectedModelItem, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              SelectionMode="Single" IsManipulationEnabled="False"
-                              Grid.Row="1" Margin="5" AutoGenerateColumns="False"
-                              CanUserResizeRows="False" CanUserAddRows="False"
-                              >
-                        <DataGrid.CellStyle>
-                            <Style TargetType="DataGridCell">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            </Style>
-                        </DataGrid.CellStyle>
+                              Grid.Row="2" Margin="5" ColumnHeaderHeight="30" 
+                              Style="{StaticResource DataGridCommonStyle}">
                         <DataGrid.Columns>
-                            <DataGridTemplateColumn Width="30">
+                            <DataGridTemplateColumn Width="40">
                                 <DataGridTemplateColumn.CellTemplate>
                                     <DataTemplate>
                                         <Image Width="20" Height="20" VerticalAlignment="Center" HorizontalAlignment="Center"
@@ -232,40 +213,30 @@
                                                   SelectedItem="{Binding Parameter, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                                   DisplayMemberPath="Definition.Name"
                                                   SelectionChanged="ComboBox_SelectionChanged"
-                                                  DropDownOpened="ComboBox_DropDownOpened"
-                                                  >
-                                        </ComboBox>
+                                                  DropDownOpened="ComboBox_DropDownOpened"/>
                                     </DataTemplate>
                                 </DataGridTemplateColumn.CellTemplate>
                             </DataGridTemplateColumn>
                         </DataGrid.Columns>
                     </DataGrid>
-                    <Grid Grid.Row="2">
+                    <Grid Grid.Row="3">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition Width="*"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Margin="5"
+                        <Button Grid.Column="0" Style="{StaticResource CommonButtonStyle}" HorizontalAlignment="Left"
                                 Content="Create Common Parameters"
-                                Width="200" HorizontalAlignment="Left"
-                                Command="{Binding CreateCommonParameters}"
-                                />
-                        <Button Grid.Column="1"
-                                Margin="5"
+                                Command="{Binding CreateCommonParameters}"/>
+                        <Button Grid.Column="1" Style="{StaticResource CommonButtonStyle}" HorizontalAlignment="Right"
                                 Content="Save Settings"
-                                Width="200"
-                                HorizontalAlignment="Right"
-                                Command="{Binding SaveSettingsCommand}"
-                                />
-
-
+                                Command="{Binding SaveSettingsCommand}"/>
                     </Grid>
                 </Grid>
             </TabItem>
             <TabItem Header="Источники"
                      IsEnabled="{Binding IsAllCorrect, UpdateSourceTrigger=PropertyChanged}">
-                <TabControl>
-                    <TabItem Header="Матрица помещений">
+                <TabControl mah:HeaderedControlHelper.HeaderFontSize="13">
+                    <TabItem Header="Матрица помещений" Width="150">
                         <Grid DataContext="{StaticResource Vm_SourceData}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="90"/>
@@ -274,48 +245,42 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="50"/>
                             </Grid.RowDefinitions>
-                            <GroupBox Grid.Row="0" Header="Инструкция" FontSize="14" FontWeight="DemiBold"
-                                      Background="#FFD4D4D4" Margin="5,5,5,5" Grid.ColumnSpan="2">
-                                <TextBlock FontSize="13" FontWeight="Light" TextWrapping="Wrap" TextTrimming="None"
+                            <GroupBox Grid.Row="0" Header="Инструкция" Style="{StaticResource InstructionGroupBoxStyle}">
+                                <TextBlock Style="{StaticResource InstructionTextStyle}"
                                        Text="В матрице помещений задаются основные свойства для выборки обрабатываемых помещений,
 нумерации помещений в квартире, а так же значения толщины отделки для расчета площадей квартиры. Значения из матрицы подбираются
 по совпадению функционального назначения (столбец ФН) и имени помещения."/>
                             </GroupBox>
-                            <TextBlock Grid.Row="1" TextWrapping="Wrap" TextTrimming="None" Margin="10,0" VerticalAlignment="Center"
-                                       HorizontalAlignment="Left"
-                                       Text="{Binding InfoText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                       />
-
+                            <TextBlock Grid.Row="1" Style="{StaticResource LabelTextStyle}"
+                                       Text="{Binding InfoText, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             <Button Grid.Row="2" HorizontalAlignment="Left"
-                                    Content="Добавить из помещений" Margin="10,10,0,10" Width="170"
+                                    Content="Добавить из помещений" Margin="10,10,0,10" Width="190"
                                     Command="{Binding AddRoomMatrixEntryFromRooms}"
                                     CommandParameter="{Binding IsAddFromRoomsEnabled}"/>
                             <TextBlock Grid.Row="2" 
                                        Text="{Binding IsOk, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                       HorizontalAlignment="Right"
-                                       />
+                                       HorizontalAlignment="Right" Margin="25,0" />
                             <Grid Grid.Row="3" Grid.ColumnSpan="2">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition Width="60"/>
                                 </Grid.ColumnDefinitions>
-                                <DataGrid Grid.Column="0" 
+                                <DataGrid Grid.Column="0" ColumnHeaderStyle="{StaticResource WrapDataGridColumnHeaderStyle}"
                                           ItemsSource="{Binding RoomMatrixEnties, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                           SelectedItem="{Binding SelectedRoomMatrixEntry, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                          SelectionMode="Single"
-                                          Margin="10" AutoGenerateColumns="False"
-                                          CanUserResizeRows="True" CanUserAddRows="False">
+                                          Margin="10" Style="{StaticResource DataGridCommonStyle}">
                                     <DataGrid.Resources>
-                                        <Style TargetType="TextBox">
-                                            <Setter Property="Foreground"
+                                        <Style TargetType="TextBox" BasedOn="{StaticResource BaseTextBoxStyle}">
+                                            <Setter Property="Padding" Value="5,0,0,0"/>
+                                            <Setter Property="Foreground" 
                                                     Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=DataGridRow}}"/>
                                         </Style>
-                                        <Style TargetType="ComboBox">
+                                        <Style TargetType="ComboBox" BasedOn="{StaticResource BaseComboBoxStyle}">
                                             <Setter Property="Foreground"
                                                     Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=DataGridRow}}"/>
                                         </Style>
                                     </DataGrid.Resources>
-                                    
+
                                     <DataGrid.RowStyle>
                                         <Style TargetType="DataGridRow">
                                             <Setter Property="Foreground">
@@ -327,7 +292,6 @@
                                                     </MultiBinding>
                                                 </Setter.Value>
                                             </Setter>
-
                                             <Style.Triggers>
                                                 <DataTrigger Binding="{Binding Converter={StaticResource RoomEntryInvalidConverter}}">
                                                     <Setter Property="Background" Value="Purple"/>
@@ -336,15 +300,8 @@
                                         </Style>
                                     </DataGrid.RowStyle>
 
-                                    <DataGrid.CellStyle>
-                                        <Style TargetType="DataGridCell">
-                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                            <!--<Setter Property="Foreground"
-                                                    Value="{Binding Foreground, RelativeSource={RelativeSource AncestorType=DataGridRow}}"/>-->
-                                        </Style>
-                                    </DataGrid.CellStyle>
                                     <DataGrid.Columns>
-                                        <DataGridTemplateColumn Header="Имя помещения" Width="150">
+                                        <DataGridTemplateColumn Header="Имя помещения" Width="140">
                                             <DataGridTemplateColumn.CellTemplate>
                                                 <DataTemplate>
                                                     <TextBox Text="{Binding Name, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
@@ -411,18 +368,16 @@
                                     </DataGrid.Columns>
                                 </DataGrid>
                                 <StackPanel Grid.Column="1">
-                                    <Button Content="ADD" Width="30" Height="30" Margin="10"
+                                    <Button Content="ADD" Width="40" Height="30" Margin="10"
                                             Command="{Binding AddRoomMatrixItem}"/>
-                                    <Button Content="DEL" Width="30" Height="30" Margin="10"
+                                    <Button Content="DEL" Width="40" Height="30" Margin="10"
                                             Command="{Binding DeleteRoomMatrixItem}"
                                             CommandParameter="{Binding SelectedRoomMatrixEntry}"/>
                                 </StackPanel>
                             </Grid>
-
-
                         </Grid>
                     </TabItem>
-                    <TabItem Header="Матрица типов квартир">
+                    <TabItem Header="Матрица типов квартир" Width="160">
                         <Grid DataContext="{StaticResource Vm_SourceData}">
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="80"/>
@@ -431,9 +386,8 @@
                                 <RowDefinition Height="*"/>
                                 <RowDefinition Height="50"/>
                             </Grid.RowDefinitions>
-                            <GroupBox Grid.Row="0" Header="Инструкция" FontSize="14" FontWeight="DemiBold"
-                                      Background="#FFD4D4D4" Margin="5,5,5,5">
-                                <TextBlock FontSize="13" FontWeight="Light" TextWrapping="Wrap" TextTrimming="None"
+                            <GroupBox Grid.Row="0" Header="Инструкция" Style="{StaticResource InstructionGroupBoxStyle}">
+                                <TextBlock Style="{StaticResource InstructionTextStyle}"
                                        Text="В данной таблице задаются данные, используемые для определения типа квартиры. Значения Содержит помещения и Не содержит помещений
 заполняются именами помещений, разделёнными точкой с запятой(;)"/>
                             </GroupBox>
@@ -441,19 +395,11 @@
                             <Grid Grid.Row="3">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="*"/>
-                                    <ColumnDefinition Width="50"/>
+                                    <ColumnDefinition Width="60"/>
                                 </Grid.ColumnDefinitions>
-                                <DataGrid Grid.Column="0" 
+                                <DataGrid Grid.Column="0" Margin="10,10,10,10" ColumnHeaderHeight="30" Style="{StaticResource DataGridCommonStyle}"
                                           ItemsSource="{Binding ApartmentTypeEntries, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                                          SelectedItem="{Binding SelectedApartmentTypeEntry, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-                                          SelectionMode="Single"
-                                          Margin="10,10,10,10" AutoGenerateColumns="False"
-                                          CanUserResizeRows="True" CanUserAddRows="False">
-                                    <DataGrid.CellStyle>
-                                        <Style TargetType="DataGridCell">
-                                            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                        </Style>
-                                    </DataGrid.CellStyle>
+                                          SelectedItem="{Binding SelectedApartmentTypeEntry, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                                     <DataGrid.Columns>
                                         <DataGridTemplateColumn Header="Тип квартиры" Width="120">
                                             <DataGridTemplateColumn.CellTemplate>
@@ -502,13 +448,12 @@
                                                 </DataTemplate>
                                             </DataGridTemplateColumn.CellTemplate>
                                         </DataGridTemplateColumn>
-
                                     </DataGrid.Columns>
                                 </DataGrid>
                                 <StackPanel Grid.Column="1">
-                                    <Button Content="ADD" Width="30" Height="30" Margin="10"
+                                    <Button Content="ADD" Width="40" Height="30" Margin="10"
                                             Command="{Binding AddApartmentTypeEntry}"/>
-                                    <Button Content="DEL" Width="30" Height="30" Margin="10"
+                                    <Button Content="DEL" Width="40" Height="30" Margin="10"
                                             Command="{Binding DeleteApartmentTypeEntry}"
                                             CommandParameter="{Binding SelectedApartmentTypeEntry}"/>
                                 </StackPanel>
@@ -527,48 +472,39 @@
                         <RowDefinition Height="*"/>
                         <RowDefinition Height="50"/>
                     </Grid.RowDefinitions>
-                    <GroupBox Grid.Row="0" Header="Инструкция" FontSize="14" FontWeight="DemiBold"
-                              Background="#FFD4D4D4" Margin="5,5,5,5">
-                        <TextBlock FontSize="13" FontWeight="Light" TextWrapping="Wrap" TextTrimming="None"
+                    <GroupBox Grid.Row="0" Header="Инструкция" Style="{StaticResource InstructionGroupBoxStyle}">
+                        <TextBlock Style="{StaticResource InstructionTextStyle}"
                                    Text="Исходная проверка включает в себя две части: проверка неразмещенных помещений и проверка заполненности параметров Функциональное назначение.
 Если у помещения параметр Функц назн. не наполнен, или помещение не размещено/не ограничено, то отобразится список с пробоемными помещениями"/>
                     </GroupBox>
                     <StackPanel Grid.Row="1" Orientation="Horizontal"
                                 VerticalAlignment="Center" HorizontalAlignment="Center">
-                        <TextBlock Text="НЕРАЗМЕЩЕННЫЕ ПОМЕЩЕНИЯ"
+                        <TextBlock Text="НЕРАЗМЕЩЕННЫЕ ПОМЕЩЕНИЯ" Margin="20,0"
                                VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                        <ComboBox Width="150"/>
                         <Button Content="REG"
                                 Command="{Binding RefreshRooms}"/>
                     </StackPanel>
                     <DataGrid Grid.Row="2"
                               ItemsSource="{Binding IncorrectRooms, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                               SelectedItem="{Binding SelectedRoom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-                              IsManipulationEnabled="False" Margin="10,10,10,10" 
-                              AutoGenerateColumns="False" CanUserResizeRows="True">
-                        <DataGrid.CellStyle>
-                            <Style TargetType="DataGridCell">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                            </Style>
-                        </DataGrid.CellStyle>
+                              Margin="10,10,10,10" CanUserResizeRows="True" Style="{StaticResource DataGridCommonStyle}">
                         <DataGrid.Columns>
-                            <DataGridTextColumn Header="Id помещения" Width="100"
+                            <DataGridTextColumn Header="Id помещения" Width="125"
                                                 Binding="{Binding Id}">
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Уровень" Width="100"
+                            <DataGridTextColumn Header="Уровень" Width="80"
                                                 Binding="{Binding LevelName}">
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Имя помещения" Width="160"
+                            <DataGridTextColumn Header="Имя помещения" Width="140"
                                                 Binding="{Binding Name}">
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Статус ошибки" Width="120"
+                            <DataGridTextColumn Header="Статус" Width="80"
                                                 Binding="{Binding ErrorStatus}">
                             </DataGridTextColumn>
-                            <DataGridTextColumn Header="Ошибка" Width="*"
+                            <DataGridTextColumn Header="Описание ошибки" Width="*"
                                                 Binding="{Binding ErrorMsg}">
                             </DataGridTextColumn>
                         </DataGrid.Columns>
-
                     </DataGrid>
                     <Separator Grid.Row="2" Height="2" Background="Black" VerticalAlignment="Bottom"/>
                 </Grid>
@@ -579,7 +515,7 @@
                 <Grid DataContext="{StaticResource Vm_CreationCalculation}">
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*"/>
-                        <RowDefinition Height="410"/>
+                        <RowDefinition Height="450"/>
                     </Grid.RowDefinitions>
                     <Grid Grid.Row="0">
                         <Grid.RowDefinitions>
@@ -589,9 +525,8 @@
                             <RowDefinition Height="50"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <GroupBox Grid.Row="0" Header="Инструкция" FontSize="14" FontWeight="DemiBold"
-                              Background="#FFD4D4D4" Margin="5,5,5,5">
-                            <TextBlock FontSize="13" FontWeight="Light" TextWrapping="Wrap" TextTrimming="None"
+                        <GroupBox Grid.Row="0" Header="Инструкция" Style="{StaticResource InstructionGroupBoxStyle}">
+                            <TextBlock Style="{StaticResource InstructionTextStyle}"
                                    Text="Сбор квартир производится через геометрические характеристики помещений,
 с учётом связи через двери и разделители помещений. Всем помещениям одной квартиры назначается одинаковое значение параметра ID кваритры.
 Рекомендуется выполнять визуальную проверку, создав цветовую схему по параметру ID Кваритры"/>
@@ -599,10 +534,10 @@
                         <Grid Grid.Row="1">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*"/>
-                                <ColumnDefinition Width="230"/>
+                                <ColumnDefinition Width="300"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="Вариант очистки параметров обрабатываемых помещений перед сборкой квартир:"
-                                   TextWrapping="Wrap" Margin="10,0,10,0" VerticalAlignment="Center"/>
+                            <TextBlock Grid.Column="0" Style="{StaticResource LabelTextStyle}"
+                                       Text="Вариант очистки параметров обрабатываемых помещений перед сборкой квартир:"/>
                             <ComboBox Grid.Column="1" Width="Auto" Margin="10,10,10,10"
                                       VerticalContentAlignment="Center"
                                   DataContext="{StaticResource Vm_Settings}"
@@ -619,38 +554,22 @@
                                 <ColumnDefinition Width="1.3*"/>
                                 <ColumnDefinition Width="2*"/>
                             </Grid.ColumnDefinitions>
-                            <TextBlock Grid.Column="0" Text="Собрать квартиры"
-                                   VerticalAlignment="Center" HorizontalAlignment="Right" Margin="20"/>
+                            <TextBlock Grid.Column="0" Text="Собрать квартиры" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                             <ComboBox Grid.Column="1" Margin="10" VerticalContentAlignment="Center"
-                                  ItemsSource="{Binding ViewOrProject}"
-                                  SelectedItem="{Binding ViewOrProjectPick, Mode=TwoWay,
-                                                UpdateSourceTrigger=PropertyChanged}"/>
+                                      ItemsSource="{Binding ViewOrProject}"
+                                      SelectedItem="{Binding ViewOrProjectPick, Mode=TwoWay,
+                                                    UpdateSourceTrigger=PropertyChanged}"/>
                             <Button Grid.Column="2" VerticalAlignment="Stretch" HorizontalAlignment="Left" Content="Собрать" 
                                     Margin="10" Width="100" FontSize="15"
                                     Command="{Binding MainCalculationCommand}"/>
                         </Grid>
 
-                        <DataGrid ItemsSource="{Binding ApartmentsOfObservableCollection, Mode = OneWay, UpdateSourceTrigger=PropertyChanged}"
-                              SelectionMode="Single" IsManipulationEnabled="False"
-                              Grid.Row="4" Margin="20" AutoGenerateColumns="False"
-                              CanUserResizeRows="False" CanUserAddRows="False"
-                              MinRowHeight="10">
-                            <DataGrid.CellStyle>
-                                <Style TargetType="DataGridCell">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-                                    <Setter Property="VerticalAlignment" Value="Center"/>
-                                </Style>
-                            </DataGrid.CellStyle>
-
+                        <DataGrid ItemsSource="{Binding ApartmentsOfObservableCollection, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}"
+                              Grid.Row="4" Margin="20" MinRowHeight="10" 
+                              ColumnHeaderStyle="{StaticResource WrapDataGridColumnHeaderStyle}" Style="{StaticResource DataGridCommonStyle}">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="ID" Width="50"
                                                 Binding="{Binding AptId}">
-                                    <DataGridTextColumn.HeaderStyle>
-                                        <Style TargetType="DataGridColumnHeader">
-                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                            <Setter Property="Height" Value="30"/>
-                                        </Style>
-                                    </DataGridTextColumn.HeaderStyle>
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="HorizontalAlignment" Value="Center"/>
@@ -662,11 +581,6 @@
 
                                 <DataGridTextColumn Header="Уровень" Width="120"
                                                 Binding="{Binding Level}">
-                                    <DataGridTextColumn.HeaderStyle>
-                                        <Style TargetType="DataGridColumnHeader">
-                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                        </Style>
-                                    </DataGridTextColumn.HeaderStyle>
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -677,11 +591,6 @@
 
                                 <DataGridTextColumn Header="Кол-во помещений" Width="150"
                                                 Binding="{Binding NumberOfRooms}">
-                                    <DataGridTextColumn.HeaderStyle>
-                                        <Style TargetType="DataGridColumnHeader">
-                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                        </Style>
-                                    </DataGridTextColumn.HeaderStyle>
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -691,11 +600,6 @@
                                 </DataGridTextColumn>
                                 <DataGridTextColumn Header="Кол-во жилых помещений" Width="165"
                                                 Binding="{Binding NumberOfLivingRooms}">
-                                    <DataGridTextColumn.HeaderStyle>
-                                        <Style TargetType="DataGridColumnHeader">
-                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                        </Style>
-                                    </DataGridTextColumn.HeaderStyle>
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -705,11 +609,6 @@
                                 </DataGridTextColumn>
                                 <DataGridTextColumn Header="Тип квартиры" Width="*"
                                                 Binding="{Binding TypeName}">
-                                    <DataGridTextColumn.HeaderStyle>
-                                        <Style TargetType="DataGridColumnHeader">
-                                            <Setter Property="HorizontalContentAlignment" Value="Center"/>
-                                        </Style>
-                                    </DataGridTextColumn.HeaderStyle>
                                     <DataGridTextColumn.ElementStyle>
                                         <Style TargetType="TextBlock">
                                             <Setter Property="HorizontalAlignment" Value="Left"/>
@@ -723,21 +622,18 @@
 
                     <Grid Grid.Row="1">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="90"/>
+                            <RowDefinition Height="110"/>
                             <RowDefinition Height="230"/>
                             <RowDefinition Height="*"/>
                         </Grid.RowDefinitions>
-                        <GroupBox Grid.Row="0" Header="Инструкция" FontSize="14" FontWeight="DemiBold"
-                              Background="#FFD4D4D4" Margin="5,5,5,5">
-                            <TextBlock FontSize="13" FontWeight="Light" TextWrapping="Wrap" TextTrimming="None"
+                        <GroupBox Grid.Row="0" Header="Инструкция" Style="{StaticResource InstructionGroupBoxStyle}">
+                            <TextBlock Style="{StaticResource InstructionTextStyle}"
                                    Text="Расчет квартир включает в себя расчет площадей квартиры, количества жилых комнат,
 а так же определение типа квартиры по источнику Типы квартир. Все полученные значения назначаются параметром помещений,
 входящим в квартиру. Все квартиры определяются по значению параметра ID Кваритры, заданному на этапе сборки квартир"/>
                         </GroupBox>
-                        <GroupBox Grid.Row="1" Header="Площади квартир" FontSize="14" FontWeight="DemiBold"
-                              Background="#FFD4D4D4" Margin="5,5,5,5">
-                            <Grid Margin="10"
-                                  DataContext="{StaticResource Vm_Settings}">
+                        <GroupBox Grid.Row="1" Header="Площади квартир" Style="{StaticResource InstructionGroupBoxStyle}">
+                            <Grid Margin="10" DataContext="{StaticResource Vm_Settings}">
                                 <Grid.RowDefinitions>
                                     <RowDefinition Height="*"/>
                                     <RowDefinition Height="*"/>
@@ -750,28 +646,24 @@
                                 </Grid.ColumnDefinitions>
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Округление площадей" FontWeight="Light" VerticalAlignment="Center"
                                        HorizontalAlignment="Left"/>
-                                <ComboBox Grid.Row="0" Grid.Column="1" Margin="5" IsEditable="False"
-                                      VerticalContentAlignment="Center"
+                                <ComboBox Grid.Row="0" Grid.Column="1" Margin="5" IsEditable="False" VerticalContentAlignment="Center"
                                       ItemsSource="{Binding AreaRoundTypeOptions}"
                                       SelectedItem="{Binding SelectedAreaRoundType, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-
-
                                 <TextBlock Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" FontWeight="Light"
                                        HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="Wrap"
                                        Text="Укажите, какую площадь помещения - округлённую или округлённую с коэффициентом использовать
 при расчёте суммарных площадей квартиры"/>
                                 <TextBlock Grid.Row="2" Grid.Column="0" Text="Площадь жилая" FontWeight="Light" VerticalAlignment="Center"
                                        HorizontalAlignment="Left"/>
-                                <ComboBox Grid.Row="2" Grid.Column="1" Margin="5" IsEditable="False"
-                                      VerticalContentAlignment="Center"
-                                      ItemsSource="{Binding ComputeLivingAreaOptions}"
-                                      SelectedItem="{Binding SelectedLivingArea, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                <ComboBox Grid.Row="2" Grid.Column="1" Margin="5" IsEditable="False" VerticalContentAlignment="Center"
+                                          ItemsSource="{Binding ComputeLivingAreaOptions}"
+                                          SelectedItem="{Binding SelectedLivingArea, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                                 <TextBlock Grid.Row="3" Grid.Column="0" Text="Площадь квартиры" FontWeight="Light" VerticalAlignment="Center"
                                        HorizontalAlignment="Left"/>
                                 <ComboBox Grid.Row="3" Grid.Column="1" Margin="5" IsEditable="False"
-                                      VerticalContentAlignment="Center"
-                                      ItemsSource="{Binding ComputeFlatAreaOptions}"
-                                      SelectedItem="{Binding SelectedFlatArea, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                                          VerticalContentAlignment="Center"
+                                          ItemsSource="{Binding ComputeFlatAreaOptions}"
+                                          SelectedItem="{Binding SelectedFlatArea, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
                             </Grid>
                         </GroupBox>
                         <Grid Grid.Row="2" DataContext="{StaticResource Vm_CreationCalculation}">
@@ -783,12 +675,12 @@
                                 <TextBlock VerticalAlignment="Center" FontSize="14"
                                            Text="Расчет квартир"/>
                                 <ComboBox Width="200" Margin="10" IsEditable="False"
-                                      VerticalContentAlignment="Center" IsEnabled="False"
-                                      ItemsSource="{Binding ViewOrProject}"
-                                      SelectedItem="{Binding ViewOrProjectPick, Mode=TwoWay,
-                                                    UpdateSourceTrigger=PropertyChanged}"/>
+                                          VerticalContentAlignment="Center" IsEnabled="False"
+                                          ItemsSource="{Binding ViewOrProject}"
+                                          SelectedItem="{Binding ViewOrProjectPick, Mode=TwoWay,
+                                                        UpdateSourceTrigger=PropertyChanged}"/>
                                 <Button Width="100" Content="Рассчитать" FontSize="15" Margin="10, 7"
-                                    Command="{Binding CalculationCommand}"/>
+                                        Command="{Binding CalculationCommand}"/>
                             </StackPanel>
                             <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Center">
                                 <TextBlock VerticalAlignment="Center" Margin="10" FontSize="10"
@@ -812,14 +704,12 @@
                         <RowDefinition Height="50"/>
                         <RowDefinition Height="*"/>
                     </Grid.RowDefinitions>
-                    <GroupBox Grid.Row="0" Header="Инструкция" FontSize="14" FontWeight="DemiBold"
-                              Background="#FFD4D4D4" Margin="5">
-                        <TextBlock FontSize="13" FontWeight="Light" TextWrapping="Wrap" TextTrimming="None"
+                    <GroupBox Grid.Row="0" Header="Инструкция" Style="{StaticResource InstructionGroupBoxStyle}">
+                        <TextBlock Style="{StaticResource InstructionTextStyle}" FontSize="13"
                                    Text="Нумерация происходит для одного корпуса одной секции. Нумерация происходит по часовой стрелке.
 Нумерация начинается с... ДОПИСАТЬ ПОТОМ"/>
                     </GroupBox>
-                    <GroupBox Grid.Row="1" Header="Целевой параметр" FontSize="14" FontWeight="DemiBold"
-                              Background="#FFD4D4D4" Margin="5">
+                    <GroupBox Grid.Row="1" Header="Целевой параметр" Style="{StaticResource InstructionGroupBoxStyle}">
                         <Grid VerticalAlignment="Center" Margin="0">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="150"/>
@@ -832,8 +722,7 @@
                                      Text="{Binding ParameterName, UpdateSourceTrigger=PropertyChanged}"/>
                         </Grid>
                     </GroupBox>
-                    <GroupBox Grid.Row="2" Header="Настрйки нумерации" FontSize="14" FontWeight="DemiBold"
-                              Background="#FFD4D4D4" Margin="5">
+                    <GroupBox Grid.Row="2" Header="Настрйки нумерации" Style="{StaticResource InstructionGroupBoxStyle}">
                         <Grid>
                             <Grid.RowDefinitions>
                                 <RowDefinition Height="*"/>
@@ -921,23 +810,18 @@
 
                     <Grid Grid.Row="3">
                         <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="1.5*"/>
                             <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="1.5*"/>
-                            <ColumnDefinition Width="1.5*"/>
+                            <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox DataContext="{StaticResource Vm_CreationCalculation}"
-                                 Grid.Column="1" Margin="10,8" VerticalContentAlignment="Center" HorizontalContentAlignment="Left"
+                        <TextBox DataContext="{StaticResource Vm_CreationCalculation}" Width="200" HorizontalAlignment="Right"
+                                 Grid.Column="0" Margin="10,8" VerticalContentAlignment="Center" HorizontalContentAlignment="Left"
                                  Text="{Binding ViewOrProjectPick, 
-                            Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                        <Button Grid.Column="2" Margin="10,8" Content="Выполнить нумерацию"
+                                        Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                        <Button Grid.Column="1" Margin="10,8" Content="Выполнить нумерацию" Width="200" HorizontalAlignment="Left"
                                 Command="{Binding CreateNumOnView}"/>
                     </Grid>
-
-
-
                 </Grid>
             </TabItem>
         </TabControl>
     </Grid>
-</Window>
+</mah:MetroWindow>

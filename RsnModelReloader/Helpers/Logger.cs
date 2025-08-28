@@ -1,12 +1,9 @@
 ﻿using log4net;
 using log4net.Config;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace RsnModelReloader.Helpers
 {
@@ -22,7 +19,8 @@ namespace RsnModelReloader.Helpers
 
             string userName = Environment.UserName;
             string dateTime = DateTime.Today.ToString("yyyy_MM_dd");
-            string logName = dateTime + " " + userName + " " + "Reopener.log";
+            //string logName = dateTime + " " + userName + " " + "Reopener.log";
+            string logName = $"{dateTime} {userName} Reopener_{SelectFilesCommand.VersionRvt}.log";
 
             string logFilePath = Path.Combine(folderPath, logName);
 

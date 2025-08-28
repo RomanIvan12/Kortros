@@ -57,8 +57,6 @@ namespace ApartmentsProject.AuxiliaryСlasses
             return logger;
         });
 
-
-
         public static ILog Log => log.Value;
         public static void CreateLogFolderAndCopy()
         {

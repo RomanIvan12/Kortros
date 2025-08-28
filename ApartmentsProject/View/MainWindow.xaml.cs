@@ -17,6 +17,7 @@ using System.Windows.Shapes;
 using ApartmentsProject.Models;
 using ApartmentsProject.ViewModel;
 using Autodesk.Revit.DB;
+using MahApps.Metro.Controls;
 using ComboBox = Autodesk.Revit.UI.ComboBox;
 
 namespace ApartmentsProject.View
@@ -24,7 +25,7 @@ namespace ApartmentsProject.View
     /// <summary>
     /// Логика взаимодействия для MainWindow.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class MainWindow : MetroWindow
     {
         private readonly ApartmentParameterMappingVm _viewModel;
         public MainWindow()

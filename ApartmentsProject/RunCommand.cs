@@ -58,8 +58,7 @@ namespace ApartmentsProject
             }
             catch (Exception ex)
             {
-                message = ex.Message;
-                Logger.Log.Error($"Ошибка команды: {message} ");
+                Logger.Log.Error($"Ошибка команды: {ex.Message} ");
                 return Result.Failed;
             }
         }
@@ -75,12 +74,10 @@ namespace ApartmentsProject
             var app = commandData.Application;
             var uidoc = app.ActiveUIDocument;
 
-
             List<Element> roomsList = new FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Rooms)
                 .Where(item => item.LevelId.IntegerValue == 1143796
                                && item.LookupParameter("ПО_Функц. назначение").AsString() == "Квартира").ToList();
             // ПО_Функц. назначение
-
             Dictionary<Room, Solid> dictOfRoomsSolids = new Dictionary<Room, Solid>();
             foreach (Element room in roomsList)
             {
@@ -90,7 +87,6 @@ namespace ApartmentsProject
             // Создал стаки для Разд Линий
             var geometryStacksOfSeparator = GeometryStackUtils.CreateGeomStackOfSeparator(doc, dictOfRoomsSolids);
             //var solids = geometryStacksOfSeparator.SelectMany(gsm => new[] {gsm.FirstSolid, gsm.LastSolid}).ToList();
-
 
             List<Element> doorList = new FilteredElementCollector(doc).OfCategory(BuiltInCategory.OST_Doors)
                 .OfClass(typeof(FamilyInstance))
@@ -108,10 +104,8 @@ namespace ApartmentsProject
                 dictOfDoorsSolids.Add(pair.Key, pair.Value);
             }
 
-
             var geometryStacksOfDoor =
                 GeometryStackUtils.CreateGeomStackOfDoor(doc, dictOfDoorsSolids, dictOfRoomsSolids);
-
 
             geometryStacksOfSeparator.AddRange(geometryStacksOfDoor);
 
@@ -134,24 +128,6 @@ namespace ApartmentsProject
                 }
                 t.Commit();
             }
-
-            #region скрыть
-            ////Element elementRoom = doc.GetElement(new ElementId(6626091)); // ID помещения
-
-
-            //foreach (var room in roomsList)
-            //{
-            //    using (Transaction t = new Transaction(doc, "Create Generic Model"))
-            //    {
-            //        t.Start();
-            //        DirectShape directShape = DirectShape.CreateElement(doc, new ElementId(BuiltInCategory.OST_GenericModel));
-            //        directShape.ApplicationId = "App id";
-            //        directShape.ApplicationDataId = "Geom obj";
-            //        directShape.SetShape(new GeometryObject[] { GeometryStackUtils.GetRoomGeometry(doc, room) });
-            //        t.Commit();
-            //    }
-            //}
-            #endregion
             return Result.Succeeded;
         }
     }
@@ -191,7 +167,6 @@ namespace ApartmentsProject
         }
         private void PlaceMark(XYZ point, Document doc)
         {
-
             using (Transaction tr = new Transaction(doc, "test"))
             {
                 tr.Start();

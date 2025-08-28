@@ -161,12 +161,13 @@ namespace CreateLinks
 
 
         public static void AddRevitLink(Document doc, string[] modelPathes)
-        {
-            using (Transaction t = new Transaction(doc, "Add RevitTypes"))
+        { 
+            foreach (string singlePath in modelPathes)
             {
-                t.Start();
-                foreach (string singlePath in modelPathes)
+
+                using (Transaction t = new Transaction(doc, "Add RevitTypes"))
                 {
+                    t.Start();
                     RevitLinkOptions revitLinkOptions;
                     try
                     {
@@ -193,7 +194,6 @@ namespace CreateLinks
                         revitLinkOptions = new RevitLinkOptions(false);
                     }
 
-
                     LinkLoadResult loadResult = RevitLinkType.Create(doc,
                         ModelPathUtils.ConvertUserVisiblePathToModelPath(singlePath),
                         revitLinkOptions);
@@ -214,12 +214,10 @@ namespace CreateLinks
                             ImportPlacement.Origin);
                         Logger.Log.Error($"Связь {singlePath} загружена по базовой точке");
                     }
+
+                    t.Commit();
                 }
-                t.Commit();
             }
         }
-
-
-
     }
 }

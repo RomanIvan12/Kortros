@@ -6,7 +6,7 @@
              xmlns:local="clr-namespace:ApartmentsProject.View.Controls"
              mc:Ignorable="d"
              Height="Auto" Width="Auto">
-    <Grid Background="Azure">
+    <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="*"/>
             <RowDefinition Height="*"/>

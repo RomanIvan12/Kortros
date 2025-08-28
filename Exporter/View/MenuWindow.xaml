@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:ExporterFromRs"
              mc:Ignorable="d" 
              Height="600"
-             Width="700"
+             Width="800"
              Title="Окно выбора файлов с Revit Server"
         WindowStartupLocation="CenterScreen">
     <Grid>

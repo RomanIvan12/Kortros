@@ -12,14 +12,18 @@ namespace RsnModelReloader
     [Regeneration(RegenerationOption.Manual)]
     public class SelectFilesCommand : IExternalCommand
     {
+        public static string VersionRvt {  get; set; }
         public Result Execute(ExternalCommandData commandData, ref string message, ElementSet elements)
         {
-            Logger.Log.Info("--- Команда Reloader запущена ---");
             Application app = commandData.Application.Application;
+            string versionNumber = app.VersionNumber;
+            VersionRvt = versionNumber;
             UIApplication uiApp = commandData.Application;
             uiApp.DialogBoxShowing += HandleDialogBoxShowing;
 
-            string versionNumber = app.VersionNumber;
+
+            Logger.Log.Info("--- Команда Reloader запущена ---");
+
             Logger.Log.Info($"Версия revit - {versionNumber}");
 
             string configFilePath = $@"C:\ProgramData\Autodesk\Revit Server {versionNumber}\Config\RSN.ini";
